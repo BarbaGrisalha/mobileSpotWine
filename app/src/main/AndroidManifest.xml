@@ -13,6 +13,9 @@
         android:theme="@style/Theme.MobileSportWine"
         tools:targetApi="31">
         <activity
+            android:name=".MenuMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>

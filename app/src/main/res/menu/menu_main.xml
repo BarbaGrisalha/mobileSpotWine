@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group >
+        <item
+            android:id="@+id/navLista"
+            android:icon="@drawable/ic_action_lista"
+            android:title="Lista de Vinhos" />
+    </group>
+    <item
+        android:id="@+id/navComunicar"
+        android:title="Comunicar" >
+        <menu >
+            <item
+                android:id="@+id/navEmail"
+                android:icon="@drawable/ic_action_email"
+                android:title="Email" />
+        </menu>
+    </item>
+</menu>
