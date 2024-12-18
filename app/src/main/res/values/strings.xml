@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MobileSportWine</string>
+    <string name="email_inv_lido">Email inválido</string>
+    <string name="password_inv_lido">Password inválido</string>
 </resources>
