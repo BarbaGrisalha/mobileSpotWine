@@ -11,11 +11,12 @@
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="371dp"
         android:layout_weight="1"
+        android:src="@drawable/logo"
         tools:layout_editor_absoluteX="53dp"
         tools:layout_editor_absoluteY="88dp"
-        tools:src="@drawable/logoSpotWine" />
+        tools:src="@drawable/logo" />
 
     <EditText
         android:id="@+id/etEmail"

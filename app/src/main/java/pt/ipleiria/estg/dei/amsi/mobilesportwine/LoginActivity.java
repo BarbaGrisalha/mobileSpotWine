@@ -26,6 +26,9 @@ public class LoginActivity extends AppCompatActivity {
         // Inicializa os campos de texto (EditText) associando-os aos IDs definidos no XML
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+        //Definido o email e senha para desenvolvimento
+        etEmail.setText("teste@gmail.com");
+        etPassword.setText("12345678");
     }
 
     // Método para validar se o formato do email é válido
