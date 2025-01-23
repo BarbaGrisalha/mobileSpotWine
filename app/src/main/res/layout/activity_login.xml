@@ -51,9 +51,7 @@
         android:textSize="20sp"
         app:cornerRadius="0sp"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="407dp"
-
-        />
+        tools:layout_editor_absoluteY="407dp"/>
 
     <View
         android:id="@+id/view"
