@@ -7,10 +7,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import pt.ipleiria.estg.dei.amsi.mobilesportwine.R;
 
 public class LoginActivity extends AppCompatActivity {
 
