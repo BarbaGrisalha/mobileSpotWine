@@ -2,110 +2,60 @@ package pt.ipleiria.estg.dei.amsi.mobilesportwine;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.CartModel;
 
 public class MenuMainActivity extends AppCompatActivity {
-    public static final String EMAIL = "pt.ipleiria.estg.dei.amsi.mobilesportwine.EMAIL";
-    private RecyclerView recyclerView;
-    private TextView connectionStatus;
-    private Button btnCheckConnection;
 
-    private static final String API_URL = "http://51.20.254.239:8080/api/cart/6?access-token=PyrvurgIAjnzfFo8XZcROCBpFDH6gOtR";
-
+    private static final String URL = "http://51.20.254.239:8080/api/cart/6?access-token=PyrvurgIAjnzfFo8XZcROCBpFDH6gOtR";
+    public static final String EMAIL = "email";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_main);
 
-        // Inicializa os componentes do layout
-        connectionStatus = findViewById(R.id.connectionStatus);
-        btnCheckConnection = findViewById(R.id.btnCheckConnection);
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Exibe o email enviado pela LoginActivity (se aplicável)
-        String email = getIntent().getStringExtra(EMAIL);
-        if (email != null) {
-            Toast.makeText(this, "Email recebido: " + email, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Nenhum email foi recebido.", Toast.LENGTH_SHORT).show();
-        }
-
-        // Configura o botão para verificar conexão e realizar a requisição
-        btnCheckConnection.setOnClickListener(v -> {
-            boolean isConnected = NetworkUtils.isInternetAvailable(this);
-            String connectionType = NetworkUtils.getConnectionType(this);
-
-            if (isConnected) {
-                connectionStatus.setText("Conectado via: " + connectionType);
-                Toast.makeText(this, "Conectado via: " + connectionType, Toast.LENGTH_SHORT).show();
-                fetchApiData(); // Faz a requisição Volley
-            } else {
-                connectionStatus.setText("Sem conexão com a Internet");
-                Toast.makeText(this, "Sem conexão com a Internet", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Chama o método correto
+        fetchCartDataXML();
     }
 
-    private void fetchApiData() {
-        // Inicializa a fila de requisições do Volley
+    private void fetchCartDataXML() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        // Cria a requisição JSON
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        StringRequest stringRequest = new StringRequest(
                 Request.Method.GET,
-                API_URL,
-                null,
-                new Response.Listener<JSONObject>() {
+                URL,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         try {
-                            // Processar o objeto "cart"
-                            JSONObject cartObject = response.getJSONObject("cart");
-                            int cartId = cartObject.getInt("id");
-                            int userId = cartObject.getInt("user_id");
-                            String createdAt = cartObject.getString("created_at");
-                            String updatedAt = cartObject.getString("updated_at");
+                            CartModel cartModel = parseXMLResponse(response);
 
-                            Log.d("CART_INFO", "Cart ID: " + cartId + ", User ID: " + userId);
-                            Log.d("CART_INFO", "Created At: " + createdAt + ", Updated At: " + updatedAt);
-
-                            // Processar o array "items"
-                            JSONArray itemsArray = response.getJSONArray("items");
-                            for (int i = 0; i < itemsArray.length(); i++) {
-                                JSONObject itemObject = itemsArray.getJSONObject(i);
-                                int itemId = itemObject.getInt("id");
-                                String productName = itemObject.getString("product_name");
-                                int quantity = itemObject.getInt("quantity");
-                                String price = itemObject.getString("price");
-                                double subtotal = itemObject.getDouble("subtotal");
-
-                                Log.d("ITEM_INFO", "Item ID: " + itemId + ", Product Name: " + productName);
-                                Log.d("ITEM_INFO", "Quantity: " + quantity + ", Price: " + price + ", Subtotal: " + subtotal);
+                            // Exibe no Log para testes
+                            Log.d("API_RESPONSE", "Cart ID: " + cartModel.getCart().getId());
+                            for (CartModel.Item item : cartModel.getItems()) {
+                                Log.d("API_RESPONSE", "Item: " + item.getProduct_name() + ", Subtotal: " + item.getSubtotal());
                             }
 
-                            // Exemplo de Toast para indicar sucesso
-                            Toast.makeText(MenuMainActivity.this, "Dados da API carregados com sucesso!", Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            Log.e("JSON_ERROR", "Erro ao processar JSON: " + e.getMessage());
-                            Toast.makeText(MenuMainActivity.this, "Erro ao processar os dados.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MenuMainActivity.this, "Dados carregados com sucesso!", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Log.e("XML_ERROR", "Erro ao processar XML: " + e.getMessage());
+                            Toast.makeText(MenuMainActivity.this, "Erro ao processar dados!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -113,12 +63,72 @@ public class MenuMainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("VOLLEY_ERROR", "Erro na requisição: " + error.getMessage());
-                        Toast.makeText(MenuMainActivity.this, "Erro ao conectar à API.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MenuMainActivity.this, "Erro ao conectar à API!", Toast.LENGTH_SHORT).show();
                     }
-                }
-        );
+                });
 
-        // Adiciona a requisição à fila
-        queue.add(jsonObjectRequest);
+        queue.add(stringRequest);
+    }
+
+    private CartModel parseXMLResponse(String response) throws Exception {
+        CartModel cartModel = new CartModel();
+        List<CartModel.Item> items = new ArrayList<>();
+
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(new java.io.StringReader(response));
+
+        CartModel.Cart cart = null;
+        CartModel.Item item = null;
+        String tag = null;
+
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            switch (eventType) {
+                case XmlPullParser.START_TAG:
+                    tag = parser.getName();
+                    if ("cart".equals(tag)) {
+                        cart = new CartModel.Cart();
+                    } else if ("item".equals(tag)) {
+                        item = new CartModel.Item();
+                    }
+                    break;
+
+                case XmlPullParser.TEXT:
+                    String text = parser.getText();
+                    if (cart != null && tag != null) {
+                        switch (tag) {
+                            case "id": cart.setId(Integer.parseInt(text)); break;
+                            case "user_id": cart.setUser_id(Integer.parseInt(text)); break;
+                            case "session_id": cart.setSession_id(text.isEmpty() ? null : text); break;
+                            case "created_at": cart.setCreated_at(text); break;
+                            case "updated_at": cart.setUpdated_at(text); break;
+                        }
+                    } else if (item != null && tag != null) {
+                        switch (tag) {
+                            case "id": item.setId(Integer.parseInt(text)); break;
+                            case "product_id": item.setProduct_id(Integer.parseInt(text)); break;
+                            case "product_name": item.setProduct_name(text); break;
+                            case "quantity": item.setQuantity(Integer.parseInt(text)); break;
+                            case "price": item.setPrice(text); break;
+                            case "subtotal": item.setSubtotal(Double.parseDouble(text)); break;
+                        }
+                    }
+                    break;
+
+                case XmlPullParser.END_TAG:
+                    tag = parser.getName();
+                    if ("cart".equals(tag)) {
+                        cartModel.setCart(cart);
+                    } else if ("item".equals(tag)) {
+                        items.add(item);
+                    }
+                    break;
+            }
+            eventType = parser.next();
+        }
+        cartModel.setItems(items);
+        return cartModel;
     }
 }
