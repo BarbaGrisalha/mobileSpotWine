@@ -52,6 +52,17 @@
             android:layout_gravity="center"
             android:layout_margin="16dp"
             android:text="Carregar Dados API"/>
+        <TextView
+            android:id="@+id/tvApiResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Resposta da API aparecerá aqui"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            />
+
         <!-- RecyclerView para mostrar a lista-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +58,9 @@ public class MenuMainActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("API_RESPONSE", "Resposta da API: " + response);
                         Toast.makeText(MenuMainActivity.this, "Dados Carregados com sucesso!!!", Toast.LENGTH_SHORT).show();
+                        //atualiza a interface com os dados
+                        TextView tvApiResponse = findViewById(R.id.tvApiResponse);
+                        tvApiResponse.setText(response);
                     }
                 },
                 new Response.ErrorListener() {
