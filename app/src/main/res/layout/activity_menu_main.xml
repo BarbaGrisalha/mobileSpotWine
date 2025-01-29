@@ -36,14 +36,14 @@
             android:textColor="@color/black"
             android:text="Verificando conexão..."
             android:textSize="16sp" />
-        <!--Botão pra verificaçao de conexão -->
+        <!--Botão pra verificaçao de conexão
             <Button
                 android:id="@+id/btnCheckConnection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="16dp"
-                android:text="Verificar Conexão"/>
+                android:text="Verificar Conexão"/> -->
         <!--Botão para conexão com API -->
         <Button
             android:id="@+id/btnFetchData"
