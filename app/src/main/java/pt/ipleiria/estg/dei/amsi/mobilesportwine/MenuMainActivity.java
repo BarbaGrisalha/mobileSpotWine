@@ -2,6 +2,8 @@ package pt.ipleiria.estg.dei.amsi.mobilesportwine;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,8 +32,42 @@ public class MenuMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_main);
 
+       //Referência ao Botao
+        Button btnFetchData = findViewById(R.id.btnFetchData);
+
+        //Adiciona o evento de clique no botão para chamar a API
+        btnFetchData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fetchCartData();
+            }
+        });
+
         // Chama o método correto
         fetchCartDataXML();
+    }
+
+    private void fetchCartData() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("API_RESPONSE", "Resposta da API: " + response);
+                        Toast.makeText(MenuMainActivity.this, "Dados Carregados com sucesso!!!", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY_ERROR","Erro na requisição: "+ error.getMessage());
+                        Toast.makeText(MenuMainActivity.this,"Erro ao conectar à API!",Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+        queue.add(stringRequest);
     }
 
     private void fetchCartDataXML() {
@@ -131,4 +167,5 @@ public class MenuMainActivity extends AppCompatActivity {
         cartModel.setItems(items);
         return cartModel;
     }
+
 }

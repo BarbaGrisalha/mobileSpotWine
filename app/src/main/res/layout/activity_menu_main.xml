@@ -44,6 +44,14 @@
                 android:layout_gravity="center"
                 android:layout_margin="16dp"
                 android:text="Verificar Conexão"/>
+        <!--Botão para conexão com API -->
+        <Button
+            android:id="@+id/btnFetchData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:text="Carregar Dados API"/>
         <!-- RecyclerView para mostrar a lista-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
