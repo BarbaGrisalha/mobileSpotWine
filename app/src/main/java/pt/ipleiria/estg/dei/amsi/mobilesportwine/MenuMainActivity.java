@@ -33,7 +33,7 @@ public class MenuMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_main);
 
-       //Referência ao Botao
+       //Referência ao Botao da API
         Button btnFetchData = findViewById(R.id.btnFetchData);
 
         //Adiciona o evento de clique no botão para chamar a API
@@ -41,6 +41,19 @@ public class MenuMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 fetchCartData();
+            }
+        });
+
+        //Referencia ao botão de limpar
+        Button btnClearData = findViewById(R.id.btnClearData);
+
+        //Adiciona evento de clique para limpar os dados
+        btnClearData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView tvApiResponse = findViewById(R.id.tvApiResponse);
+                tvApiResponse.setText("");//aqui limpa texto
+                Toast.makeText(MenuMainActivity.this,"Dados Apagados", Toast.LENGTH_SHORT).show();
             }
         });
 
