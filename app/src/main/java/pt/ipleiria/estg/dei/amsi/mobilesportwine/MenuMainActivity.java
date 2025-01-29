@@ -98,17 +98,18 @@ public class MenuMainActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         try {
                             CartModel cartModel = parseXMLResponse(response);
+                            //Formatar a exibição dos dados na textview
+                            StringBuilder formattedResponse = new StringBuilder();
+                            formattedResponse.append("Cart ID: ").append(cartModel.getCart().getId()).append("\n\n");
 
-                            // Exibe no Log para testes
-                            Log.d("API_RESPONSE", "Cart ID: " + cartModel.getCart().getId());
                             for (CartModel.Item item : cartModel.getItems()) {
-                                Log.d("API_RESPONSE", "Item: " + item.getProduct_name() + ", Subtotal: " + item.getSubtotal());
+                                formattedResponse.append("Produto: ").append(item.getProduct_name()).append("\n")
+                                        .append("Quantidade: ").append(item.getQuantity()).append("\n")
+                                        .append("Preço: ").append(item.getPrice()).append("\n")
+                                        .append("Subtotal: ").append(item.getSubtotal()).append("\n\n");
                             }
-
-                            Toast.makeText(MenuMainActivity.this, "Dados carregados com sucesso!", Toast.LENGTH_SHORT).show();
-                        } catch (Exception e) {
-                            Log.e("XML_ERROR", "Erro ao processar XML: " + e.getMessage());
-                            Toast.makeText(MenuMainActivity.this, "Erro ao processar dados!", Toast.LENGTH_SHORT).show();
+                            //atualizamos a interface
+                            } catch (Exception e) {
                         }
                     }
                 },

@@ -51,17 +51,34 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:text="Carregar Dados API"/>
+            android:text="Carregar Dados"/>
         <TextView
             android:id="@+id/tvApiResponse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Resposta da API aparecerá aqui"
+            android:text="Dados dos produtos"
             android:textSize="16sp"
             android:padding="16dp"
             android:gravity="center"
             android:textColor="@android:color/black"
             />
+        <Button
+            android:id="@+id/btnOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:text="Listar Ordens"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:gravity="center"
+            android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/orderApiResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Dados das Orders"/>
         <!-- Limpar botão -->
         <Button
             android:id="@+id/btnClearData"
