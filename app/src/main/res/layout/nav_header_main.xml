@@ -6,21 +6,21 @@
     android:background="@color/color_purple500"
     android:gravity="bottom"
     android:padding="16dp"
+    android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logo"/>
+        android:layout_width="113dp"
+        android:layout_height="113dp"
+        app:srcCompat="@drawable/logo" />
 
     <TextView
-        android:id="@+id/spotwine"
+        android:id="@+id/tvEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="SpotWine"
         android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:gravity="center"/>
+        android:textSize="20sp" />
 
 </LinearLayout>
