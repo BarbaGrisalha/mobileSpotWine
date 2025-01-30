@@ -108,8 +108,13 @@ public class MenuMainActivity extends AppCompatActivity {
                                         .append("Preço: ").append(item.getPrice()).append("\n")
                                         .append("Subtotal: ").append(item.getSubtotal()).append("\n\n");
                             }
-                            //atualizamos a interface
+                            //atualizamos a interface com os dados formatados
+                            TextView tvApiResponse = findViewById(R.id.tvApiResponse);
+                            tvApiResponse.setText(formattedResponse.toString());
+                            Toast.makeText(MenuMainActivity.this,"Dados Carregados com Sucesso!!!",Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
+                                Log.e("XML_ERROR", "Erro ao processar XML: "+ e.getMessage());
+                                Toast.makeText(MenuMainActivity.this,"Erro ao processar dados!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
