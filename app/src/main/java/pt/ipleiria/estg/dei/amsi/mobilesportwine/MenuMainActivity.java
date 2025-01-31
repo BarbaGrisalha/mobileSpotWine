@@ -75,12 +75,12 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
         SharedPreferences sharedPreferenceUser = getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
 
-<<<<<<< Updated upstream
-        if(email != null){
+        if(email != null) {
             SharedPreferences.Editor editorUser = sharedPreferenceUser.edit();
             editorUser.putString("loggedEmail", email);
             editorUser.apply();
-=======
+        }
+
     private void fetchCartDataXML() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
