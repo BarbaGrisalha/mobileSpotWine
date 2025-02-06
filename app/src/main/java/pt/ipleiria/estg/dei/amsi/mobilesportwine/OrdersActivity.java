@@ -25,6 +25,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.adaptadores.OrderAdapter;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.CartModel;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Order;
 
 public class OrdersActivity extends AppCompatActivity {
@@ -48,6 +49,11 @@ public class OrdersActivity extends AppCompatActivity {
         recyclerView.setAdapter(orderAdapter);
 
         fetchOrders();
+
+        CartStorage.clearCart(this);
+        List<CartModel.Item> cartItems = CartStorage.loadCart(this);
+// Atualize seu RecyclerView ou ListView com os dados de cartItems
+
     }
 
     private void fetchOrders() {
@@ -89,4 +95,5 @@ public class OrdersActivity extends AppCompatActivity {
                 });
                             queue.add(jsonArrayRequest);
     }
+
 }

@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -200,5 +201,9 @@ public class MenuMainActivity extends AppCompatActivity {
         return cartModel;
     }
 
-
+    public void addToCart(Context context, CartModel.Item item) {
+        List<CartModel.Item> cartItems = CartStorage.loadCart(context);
+        cartItems.add(item);
+        CartStorage.saveCart(context, cartItems);
+    }
 }
