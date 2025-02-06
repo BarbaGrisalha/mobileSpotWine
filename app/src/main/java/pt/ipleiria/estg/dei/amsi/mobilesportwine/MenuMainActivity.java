@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +60,14 @@ public class MenuMainActivity extends AppCompatActivity {
 
         // Chama o método correto
         fetchCartDataXML();
+        Button btnViewOrders = findViewById(R.id.btnViewOrders);
+        btnViewOrders.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(MenuMainActivity.this, OrdersActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void fetchCartData() {
@@ -190,5 +199,6 @@ public class MenuMainActivity extends AppCompatActivity {
         cartModel.setItems(items);
         return cartModel;
     }
+
 
 }

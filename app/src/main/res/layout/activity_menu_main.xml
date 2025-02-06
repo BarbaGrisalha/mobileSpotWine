@@ -79,6 +79,13 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Dados das Orders"/>
+        <Button
+            android:id="@+id/btnViewOrders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ver Pedidos"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"/>
         <!-- Limpar botão -->
         <Button
             android:id="@+id/btnClearData"

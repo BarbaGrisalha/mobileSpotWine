@@ -32,7 +32,8 @@ public class OrdersActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private List<Order> orderList;
     private OrderAdapter orderAdapter;
-    private static final String API_URL ="http://localhost:8888/projetoweb/backend/web/api/cart/add?access-token=PyrvurgIAjnzfFo8XZcROCBpFDH6gOtR";
+    private static final String API_URL ="http://51.20.254.239:8080/api/";
+    private static final String ACCESS_TOKEN ="mDQRSISzsnFMj2BtR5yp9XBgQT6Cg86z";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -55,7 +56,7 @@ public class OrdersActivity extends AppCompatActivity {
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET,
-                API_URL,
+                API_URL+ACCESS_TOKEN,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
