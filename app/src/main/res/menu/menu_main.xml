@@ -10,7 +10,11 @@
             android:id="@+id/navLista"
 
             android:icon="@drawable/ic_menu_product"
-            android:title="@string/menu_txt_lista" />
+            android:title="@string/menu_txt_lista"/>
+        <item
+            android:id="@+id/navOrder"
+            android:icon="@drawable/ic_menu_product"
+            android:title="Minhas Faturas"/>
     </group>
     <item
         android:id="@+id/navComunicar"
