@@ -7,9 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MenuMainActivity"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start"
-    >
-
+    tools:openDrawer="start">
     <include
         layout="@layout/app_bar_main"
         android:layout_height="match_parent"
@@ -26,6 +24,5 @@
     <TextView
         android:id="@+id/tvApiResponse"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Texto de exemplo" />
+        android:layout_height="wrap_content" />
 </androidx.drawerlayout.widget.DrawerLayout>

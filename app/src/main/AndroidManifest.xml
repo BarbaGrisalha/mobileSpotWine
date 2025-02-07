@@ -16,24 +16,32 @@
         android:theme="@style/Theme.MobileSportWine"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".DetalhesVinhoActivity"
             android:exported="false"
             android:parentActivityName=".MenuMainActivity"/>
+
         <activity
             android:name=".MenuMainActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.MobileSportWine.NoActionBar"/>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true">
+            android:theme="@style/Theme.MobileSportWine.NoActionBar">
+
+            <!-- Intent-filter deve estar DENTRO da atividade principal -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"/>
+
+        <activity
+            android:name=".OrdersActivity"
+            android:exported="true"/>
+
+    </application>
 </manifest>

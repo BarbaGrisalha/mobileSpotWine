@@ -15,6 +15,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -63,38 +64,67 @@ public class OrdersActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        //aqui buscando o raio da API
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 API_URL,
                 null,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Log.d("DEBUG", "Resposta da API: " + response.toString());
+                    public void onResponse(JSONArray response) {
+                        Log.d("DEBUG", "Resposta da API: " + response.toString());
 
-                            //processamento da resposta com o VinhoJsonParser
-                            JSONArray ordersArray = response.getJSONArray("orders");
-                            orderList.clear();
-                            orderList = VinhoJsonParser.parserJsonOrders(ordersArray);
+                        // Converte JSON em lista de Orders
+                        orderList.clear();
+                        orderList.addAll(VinhoJsonParser.parserJsonOrders(response));
 
-                            //notificação ao adapter sobre os novos dados
-                            orderAdapter.notifyDataSetChanged();
-
-                        } catch (JSONException e) {
-                            Log.e("JSON_ERROR", "ERRO AO PROCESSAR O JSON: " + e.getMessage());
-                        }
+                        orderAdapter.notifyDataSetChanged();
                         progressBar.setVisibility(View.GONE);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("ERROR","Erro na API: "+ error.getMessage());
+                        Log.e("ERROR", "Erro na API: " + error.getMessage());
                         progressBar.setVisibility(View.GONE);
                     }
                 });
-        queue.add(jsonObjectRequest);
+
+        queue.add(jsonArrayRequest);
+//        progressBar.setVisibility(View.VISIBLE);
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//
+//        //aqui buscando o raio da API
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+//                Request.Method.GET,
+//                API_URL,
+//                null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            Log.d("DEBUG", "Resposta da API: " + response.toString());
+//
+//                            //processamento da resposta com o VinhoJsonParser
+//                            JSONArray ordersArray = response.getJSONArray("orders");
+//                            orderList.clear();
+//                            orderList = VinhoJsonParser.parserJsonOrders(ordersArray);
+//
+//                            //notificação ao adapter sobre os novos dados
+//                            orderAdapter.notifyDataSetChanged();
+//
+//                        } catch (JSONException e) {
+//                            Log.e("JSON_ERROR", "ERRO AO PROCESSAR O JSON: " + e.getMessage());
+//                        }
+//                        progressBar.setVisibility(View.GONE);
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.e("ERROR","Erro na API: "+ error.getMessage());
+//                        progressBar.setVisibility(View.GONE);
+//                    }
+//                });
+//        queue.add(jsonObjectRequest);
     }
 }

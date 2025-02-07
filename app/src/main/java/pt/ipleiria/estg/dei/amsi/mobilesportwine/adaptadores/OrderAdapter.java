@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -20,19 +21,20 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         this.orderList = orderList;
     }
 
+    @NonNull
     @Override
-    public OrderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order, parent, false);
         return new OrderViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(OrderViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
-        holder.invoiceNumber.setText(order.getInvoiceNumber());
-        holder.invoiceDate.setText(order.getInvoiceDate());
-        holder.totalAmount.setText(String.valueOf(order.getTotalAmount()));
-        holder.status.setText(order.getStatus());
+        holder.invoiceNumber.setText("Fatura #"+order.getInvoiceNumber());
+        holder.invoiceDate.setText("Data: "+order.getInvoiceDate());
+        holder.totalAmount.setText("Total: "+String.valueOf(order.getTotalAmount()));
+        holder.status.setText("Status: "+order.getStatus());
     }
 
     @Override
