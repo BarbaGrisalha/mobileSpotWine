@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,14 +8,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.adaptadores.ListaVinhosAdaptador;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhosListener;
-import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonGestorVinhos;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonManager;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Vinho;
 
 public class ListaVinhosFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, VinhosListener {
@@ -55,15 +53,15 @@ public class ListaVinhosFragment extends Fragment implements SwipeRefreshLayout.
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        SingletonGestorVinhos.getInstance(getContext()).setVinhosListener(this);
-        SingletonGestorVinhos.getInstance(getContext()).getAllVinhosAPI(getContext());
+        SingletonManager.getInstance(getContext()).setVinhosListener(this);
+        SingletonManager.getInstance(getContext()).getAllVinhosAPI(getContext());
 
         return view;
     }
 
 
     public void onRefresh(){
-        SingletonGestorVinhos.getInstance(getContext()).getAllVinhosAPI(getContext());
+        SingletonManager.getInstance(getContext()).getAllVinhosAPI(getContext());
         swipeRefreshLayout.setRefreshing(false);
     }
 

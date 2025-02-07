@@ -32,11 +32,11 @@ import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhosListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.LoginJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
-public class SingletonGestorVinhos {
+public class SingletonManager {
 
     private ArrayList<Vinho> vinhos;
 
-    private static SingletonGestorVinhos instance = null;
+    private static SingletonManager instance = null;
 
     private VinhoBDHelper  vinhoBDHelper = null;
 
@@ -49,15 +49,15 @@ public class SingletonGestorVinhos {
     private VinhoListener vinhoListener;
     private LoginListener loginListener;
 
-    public static synchronized SingletonGestorVinhos getInstance(Context context) {
+    public static synchronized SingletonManager getInstance(Context context) {
         if (instance == null) {
-            instance = new SingletonGestorVinhos(context);
+            instance = new SingletonManager(context);
             volleyQueue = Volley.newRequestQueue(context);
         }
         return instance;
     }
 
-    private SingletonGestorVinhos(Context context) {
+    private SingletonManager(Context context) {
         //gerarDadosDinamico();
         vinhos = new ArrayList<>();
         vinhoBDHelper = new VinhoBDHelper(context);
@@ -230,7 +230,7 @@ public class SingletonGestorVinhos {
                     params.put("name", vinho.getName());
                     params.put("description", vinho.getDescription());
                     params.put("price", vinho.getPrice() + "");
-                    params.put("capa", vinho.getCapa());
+                    params.put("capa", vinho.getImage());
                     return params;
                 }
             };

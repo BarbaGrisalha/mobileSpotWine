@@ -1,53 +1,35 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo;
 
 public class Vinho {
-    private int id;
-    private String name, description, capa;
-    private Double price;
+    private int id, stock;
+    private String name, description, category;// Novo campo
+    private double price;// Novo campo
+    private String image; // Novo campo
 
-    //Contrutores
-    public Vinho(int id, String name, String description, Double price) {
+    public Vinho(int id, String name, String description, String category, double price, int stock, String image) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.category = category;
         this.price = price;
+        this.stock = stock;
+        this.image = image;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    // Getters e Setters
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    public String getCategory() { return category; }
+    public double getPrice() { return price; }
+    public int getStock() { return stock; }
+    public String getImage() { return image; }
 
-    //Métodos Getters
-    public int getId() {
-        return id;
-    }
-
-    public String getCapa() {
-        return capa;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    //Métodos Setters
-    public void setName(String titulo) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+    public void setId(int id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setDescription(String description) { this.description = description; }
+    public void setCategory(String category) { this.category = category; }
+    public void setPrice(double price) { this.price = price; }
+    public void setStock(int stock) { this.stock = stock; }
+    public void setImage(String image) { this.image = image; }
 }

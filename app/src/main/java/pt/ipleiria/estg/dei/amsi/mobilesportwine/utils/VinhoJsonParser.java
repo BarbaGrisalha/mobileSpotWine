@@ -19,40 +19,50 @@ public class VinhoJsonParser {
         try{
             for(int i = 0; i < response.length(); i++){
                 JSONObject vinho = (JSONObject) response.get(i);
-                int idVinho = vinho.getInt("product_id");
+
+                int idVinho = vinho.getInt("id"); // Correção: era "product_id"
                 String name = vinho.getString("name");
                 String description = vinho.getString("description");
-                Double price = vinho.getDouble("price");
+                String category = vinho.getString("category"); // Novo campo
+                double price = vinho.getDouble("price"); // Correção: Converter de String para Double
+                int stock = vinho.getInt("stock"); // Novo campo
+                String image = vinho.getString("image"); // Correção: Adicionar imagem
 
-                Vinho auxVinho = new Vinho(idVinho, name, description, price);
+                Vinho auxVinho = new Vinho(idVinho, name, description, category, price, stock, image);
                 vinhos.add(auxVinho);
             }
 
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return vinhos;
     }
 
+
     public static Vinho parserJsonVinho(String response){
         Vinho auxVinho = null;
 
         try{
             JSONObject vinho = new JSONObject(response);
-            int idVinho = vinho.getInt("product_id");
+
+            int idVinho = vinho.getInt("id"); // Correção
             String name = vinho.getString("name");
             String description = vinho.getString("description");
-            Double price = vinho.getDouble("price");
+            String category = vinho.getString("category"); // Novo campo
+            double price = vinho.getDouble("price"); // Correção
+            int stock = vinho.getInt("stock"); // Novo campo
+            String image = vinho.getString("image"); // Correção
 
-            auxVinho = new Vinho(idVinho, name, description, price);
+            auxVinho = new Vinho(idVinho, name, description, category, price, stock, image);
 
-        }catch( JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return auxVinho;
     }
+
 
     //TODO: PARSERJSONLOGIN
 

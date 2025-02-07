@@ -10,20 +10,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
-import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonGestorVinhos;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonManager;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Vinho;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
@@ -33,7 +29,7 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
 
     private Vinho vinho;
 
-    private EditText etName, etDescription, etPrice;
+    private EditText etName, etDescription, etPrice, etCategory, etStock;
     private ImageView imgCapa;
     private FloatingActionButton fabGuardar;
 
@@ -43,10 +39,13 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
         setContentView(R.layout.activity_detalhes_vinho);
 
         int id = getIntent().getIntExtra(ID_VINHO, 0);
-        vinho = SingletonGestorVinhos.getInstance(getApplicationContext()).getVinho(id);
+        vinho = SingletonManager.getInstance(getApplicationContext()).getVinho(id);
 
         etName = findViewById(R.id.etName);
         etDescription = findViewById(R.id.etDescription);
+        etPrice = findViewById(R.id.etPrice);
+        etCategory = findViewById(R.id.etCategory);
+        etStock = findViewById(R.id.etStock);
         etPrice = findViewById(R.id.etPrice);
         imgCapa = findViewById(R.id.imgCapa);
 
@@ -76,8 +75,10 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
                     vinho.setName(etName.getText().toString());
                     vinho.setDescription(etDescription.getText().toString());
                     vinho.setPrice(Double.parseDouble(etPrice.getText().toString()));
+                    vinho.setCategory(etCategory.getText().toString());
+                    vinho.setStock(Integer.parseInt(etStock.getText().toString()));
 
-                    SingletonGestorVinhos.getInstance(getApplicationContext()).editarVinhoAPI(vinho, getApplicationContext());
+                    SingletonManager.getInstance(getApplicationContext()).editarVinhoAPI(vinho, getApplicationContext());
 
 
                 }else{
@@ -88,17 +89,22 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
                         return; // Sai do método sem salvar
                     }
 
-                    vinho =  new Vinho(0,
+                    vinho = new Vinho(0,
                             etName.getText().toString(),
                             etDescription.getText().toString(),
-                            Double.parseDouble(etPrice.getText().toString()));
+                            etCategory.getText().toString(),
+                            Double.parseDouble(etPrice.getText().toString()),
+                            Integer.parseInt(etStock.getText().toString()),
+                            ""
+                    );
 
-                    SingletonGestorVinhos.getInstance(getApplicationContext()).adicionarVinhoAPI(vinho, getApplicationContext());
+
+                    SingletonManager.getInstance(getApplicationContext()).adicionarVinhoAPI(vinho, getApplicationContext());
                 }
             }
         });
 
-        SingletonGestorVinhos.getInstance(getApplicationContext()).setVinhoListener(this);
+        SingletonManager.getInstance(getApplicationContext()).setVinhoListener(this);
 
     }
 
@@ -128,7 +134,7 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
         etPrice.setText(""+vinho.getPrice());
 
         Glide.with(getApplicationContext())
-                .load(vinho.getCapa())
+                .load(vinho.getImage())
                 .placeholder(R.drawable.wine_default)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgCapa);  // Define a imagem da capa do livro
@@ -166,7 +172,7 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        SingletonGestorVinhos.getInstance(getApplicationContext()).removerVinhoAPI(vinho, getApplicationContext());
+                        SingletonManager.getInstance(getApplicationContext()).removerVinhoAPI(vinho, getApplicationContext());
 
                     }
                 })

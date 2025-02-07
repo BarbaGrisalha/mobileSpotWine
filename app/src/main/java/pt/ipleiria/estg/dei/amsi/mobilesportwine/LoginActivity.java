@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -14,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Objects;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.LoginListener;
-import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonGestorVinhos;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonManager;
 
 
 public class LoginActivity extends AppCompatActivity implements LoginListener {
@@ -32,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
         userPassword = findViewById(R.id.etPassword);
 
 
-        SingletonGestorVinhos.getInstance(getApplicationContext()).setLoginListener(this);
+        SingletonManager.getInstance(getApplicationContext()).setLoginListener(this);
     }
 
     public final void onClickLogin(View view) {
@@ -49,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
             return;
         }
 
-        SingletonGestorVinhos.getInstance(getApplicationContext()).loginAPI(userEmail.getText().toString(), userPassword.getText().toString(), getApplicationContext());
+        SingletonManager.getInstance(getApplicationContext()).loginAPI(userEmail.getText().toString(), userPassword.getText().toString(), getApplicationContext());
     }
 
     private boolean isEmailValid(String email) {
