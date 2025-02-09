@@ -68,13 +68,6 @@ public class VinhoJsonParser {
 
     //TODO: PARSERJSONLOGIN
 
-
-
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-        return networkInfo != null && networkInfo.isConnected();
-    }
-
     public static List<Order> parserJsonOrders(JSONArray ordersArray) {
         return null;//só para não se perder
     }

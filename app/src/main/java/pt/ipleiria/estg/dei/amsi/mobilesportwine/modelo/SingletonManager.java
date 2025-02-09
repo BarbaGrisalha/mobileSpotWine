@@ -32,19 +32,23 @@ import pt.ipleiria.estg.dei.amsi.mobilesportwine.R;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.CarrinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.CheckoutListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.LoginListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.PostListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.PostsListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhosListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.CarrinhoJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ConnectivityJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.LoginJsonParser;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.PostJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
 public class SingletonManager {
+    private static SingletonManager instance = null;
 
     private ArrayList<Vinho> vinhos;
     private ArrayList<ItemCarrinho> itensCarrinho;
+    private ArrayList<Post> posts;
 
-    private static SingletonManager instance = null;
 
     private VinhoBDHelper  vinhoBDHelper = null;
 
@@ -53,12 +57,15 @@ public class SingletonManager {
     private static final String mUrlAPIVinhos = "http://51.20.254.239:8080/api/product";
     private static final String mUrlAPILogin = "http://51.20.254.239:8080/api/user/login";
     private static final String mUlAPICart = "http://51.20.254.239:8080/api/cart";
+    private static final String URL_API_POSTS = "http://51.20.254.239:8080/api/blog-post";
 
     private VinhosListener vinhosListener;
     private VinhoListener vinhoListener;
     private LoginListener loginListener;
     private CarrinhoListener carrinhoListener;
     private CheckoutListener checkoutListener;
+    private PostsListener postsListener;
+    private PostListener postListener;
 
     public static synchronized SingletonManager getInstance(Context context) {
         if (instance == null) {
@@ -95,6 +102,13 @@ public class SingletonManager {
         this.checkoutListener = checkoutListener;
     }
 
+    public void setPostsListener(PostsListener  listener) {
+        this.postsListener = listener;
+    }
+
+    public void setPostListener(PostListener listener) {
+        this.postListener = listener;
+    }
 
 
     public ArrayList<Vinho> getVinhosBD() {
@@ -118,6 +132,15 @@ public class SingletonManager {
 
     public ArrayList<ItemCarrinho> getCarrinhoItems() {
         return itensCarrinho;
+    }
+
+    public Post getPost(int id){
+        for (Post p: posts) {
+            if (p.getId() == id) {
+                return p;
+            }
+        }
+        return null;
     }
 
 
@@ -616,10 +639,131 @@ public class SingletonManager {
         volleyQueue.add(request);
     }
 
+    public void getAllPostsAPI(final Context context) {
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL_API_POSTS, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        posts = PostJsonParser.parserJsonPosts(response);
+                        if (postsListener != null) {
+                            postsListener.onRefreshListaPosts(posts);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao buscar posts: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        volleyQueue.add(request);
+    }
 
+    public void adicionarPostAPI(final Post post, final Context context) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        String url = "http://51.20.254.239:8080/api/blog-post?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
 
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+//                        Post novoPost = PostJsonParser.parserJsonPost(response);
+//                        adicionarPostBD(newPost); // Adiciona ao BD local
 
+                        if (postListener != null) {
+                            postListener.onRefreshDetalhesPost(MenuMainActivity.ADD);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao adicionar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("title", post.getTitle());
+                params.put("content", post.getContent());
+                return params;
+            }
+        };
+
+        volleyQueue.add(request);
+    }
+
+//    public void editarPostAPI(final Post post, final Context context) {
+//        if (!PostJsonParser.isConnectionInternet(context)) {
+//            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
+//
+//        StringRequest request = new StringRequest(Request.Method.PUT, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        editarPostBD(post);
+//
+//                        if (postListener != null) {
+//                            postListener.onRefreshListaPosts(getAllPostsBD());
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(context, "Erro ao editar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                }) {
+//            @Nullable
+//            @Override
+//            protected Map<String, String> getParams() {
+//                Map<String, String> params = new HashMap<>();
+//                params.put("title", post.getTitulo());
+//                params.put("content", post.getConteudo());
+//                return params;
+//            }
+//        };
+//
+//        volleyQueue.add(request);
+//    }
+//
+//    public void deletarPostAPI(final Post post, final Context context) {
+//        if (!PostJsonParser.isConnectionInternet(context)) {
+//            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
+//
+//        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        removerPostBD(post.getId());
+//
+//                        if (postListener != null) {
+//                            postListener.onRefreshListaPosts(getAllPostsBD());
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(context, "Erro ao deletar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//
+//        volleyQueue.add(request);
+//    }
 
 
     public void loginAPI(String email, String password, final Context context) {

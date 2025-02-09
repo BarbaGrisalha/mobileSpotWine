@@ -15,4 +15,8 @@
     <string name="remove_item">remover item</string>
     <string name="add_to_cart">Adicionar ao carrinho</string>
     <string name="continuar_comprando">Continuar Comprando</string>
+    <string name="Blog">Blog</string>
+    <string name="adicionar_post">Adicionar Post</string>
+    <string name="txt_titulo_remover_post">Remover Post</string>
+    <string name="description">Adicionar Post</string>
 </resources>

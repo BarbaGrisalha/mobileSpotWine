@@ -1,7 +1,5 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine.adaptadores;
 
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
