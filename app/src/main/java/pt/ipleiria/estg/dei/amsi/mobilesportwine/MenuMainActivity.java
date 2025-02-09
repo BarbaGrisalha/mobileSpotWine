@@ -61,8 +61,6 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
         fragmentManager = getSupportFragmentManager();
 
-        listaVinhos = SingletonManager.getInstance(this).getVinhos();// Pegamos a lista de vinhos
-
 
         carregarFragmentoInicial();
 
@@ -84,6 +82,35 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_carrinho, menu); // Infla o menu da Toolbar
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        Fragment fragment = null;
+
+        if (item.getItemId() == R.id.navLista) {
+            fragment = new ListaVinhosFragment();
+            setTitle(item.getTitle());
+        }else if (item.getItemId() == R.id.navBlog) {
+            fragment = new BlogFragment();
+            setTitle(item.getTitle());
+
+        } else if(item.getItemId() == R.id.navOrder){
+            //Abrir OrdersActivity
+            Intent intent = new Intent(this, OrdersActivity.class);
+            startActivity(intent);
+        }else if (item.getItemId() == R.id.navEmail) {
+            // System.out.println("-->Nav Email");
+            // Toast.makeText(this, "-->Nav Email", Toast.LENGTH_SHORT).show();
+
+        }
+
+        if (fragment != null)
+            fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
+
+
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -110,32 +137,7 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
             Toast.makeText(this, "Não teme email config.", Toast.LENGTH_SHORT);
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        Fragment fragment = null;
 
-        if (item.getItemId() == R.id.navLista) {
-            // System.out.println("-->Nav Estatico");
-            // Toast.makeText(this, "-->Nav Estatico", Toast.LENGTH_SHORT).show();
-            fragment = new ListaVinhosFragment();
-            setTitle(item.getTitle());
-        } else if(item.getItemId() == R.id.navOrder){
-            //Abrir OrdersActivity
-            Intent intent = new Intent(this, OrdersActivity.class);
-            startActivity(intent);
-        }else if (item.getItemId() == R.id.navEmail) {
-            // System.out.println("-->Nav Email");
-            // Toast.makeText(this, "-->Nav Email", Toast.LENGTH_SHORT).show();
-
-        }
-
-        if (fragment != null)
-            fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
-
-
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

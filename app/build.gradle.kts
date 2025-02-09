@@ -32,7 +32,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -42,6 +41,7 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     implementation(libs.swiperefreshlayout)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
