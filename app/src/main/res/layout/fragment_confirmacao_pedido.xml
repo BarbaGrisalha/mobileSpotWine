@@ -1,0 +1,51 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/confirmacaoPedidoTexto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pedido Confirmado!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/confirmacaoDetalhes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Detalhes do Pedido"
+        android:textSize="18sp"
+        android:paddingBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/txtPedidoId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pedido ID: " />
+
+    <TextView
+        android:id="@+id/txtStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: " />
+
+    <TextView
+        android:id="@+id/txtTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total: €0.00" />
+
+
+    <Button
+        android:id="@+id/btnContinuar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/purple_500"
+        android:text="@string/continuar_comprando"
+        android:textColor="@android:color/white" />
+</LinearLayout>

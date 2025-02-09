@@ -23,9 +23,4 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/menu_main" />
-    <TextView
-        android:id="@+id/tvApiResponse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Texto de exemplo" />
 </androidx.drawerlayout.widget.DrawerLayout>

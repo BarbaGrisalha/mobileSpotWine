@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonManager;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Vinho;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ConnectivityJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
 public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoListener {
@@ -153,7 +154,7 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.itemRemover){
-            if(!VinhoJsonParser.isConnectionInternet(getApplicationContext())){
+            if(!ConnectivityJsonParser.isConnectionInternet(getApplicationContext())){
                 Toast.makeText(this, "Não tem ligação a rede", Toast.LENGTH_SHORT);
             }else{
                 dialogRemover();

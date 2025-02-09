@@ -15,10 +15,13 @@ import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,15 +29,20 @@ import java.util.Map;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.MenuMainActivity;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.R;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.CarrinhoListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.CheckoutListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.LoginListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhosListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.CarrinhoJsonParser;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ConnectivityJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.LoginJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
 public class SingletonManager {
 
     private ArrayList<Vinho> vinhos;
+    private ArrayList<ItemCarrinho> itensCarrinho;
 
     private static SingletonManager instance = null;
 
@@ -44,10 +52,13 @@ public class SingletonManager {
 
     private static final String mUrlAPIVinhos = "http://51.20.254.239:8080/api/product";
     private static final String mUrlAPILogin = "http://51.20.254.239:8080/api/user/login";
+    private static final String mUlAPICart = "http://51.20.254.239:8080/api/cart";
 
     private VinhosListener vinhosListener;
     private VinhoListener vinhoListener;
     private LoginListener loginListener;
+    private CarrinhoListener carrinhoListener;
+    private CheckoutListener checkoutListener;
 
     public static synchronized SingletonManager getInstance(Context context) {
         if (instance == null) {
@@ -77,6 +88,14 @@ public class SingletonManager {
     public void setLoginListener(LoginListener loginListener){
         this.loginListener = loginListener;
     }
+    public void setCarrinhoListener(CarrinhoListener carrinhoListener){
+        this.carrinhoListener = carrinhoListener;
+    }
+    public void setCheckoutListener(CheckoutListener checkoutListener){
+        this.checkoutListener = checkoutListener;
+    }
+
+
 
     public ArrayList<Vinho> getVinhosBD() {
         vinhos = vinhoBDHelper.getAllVinhosBD();
@@ -92,6 +111,15 @@ public class SingletonManager {
         }
         return null;
     }
+
+    public ArrayList<Vinho> getVinhos(){
+        return vinhos;
+    }
+
+    public ArrayList<ItemCarrinho> getCarrinhoItems() {
+        return itensCarrinho;
+    }
+
 
     public void adicionarVinhoBD(Vinho vinho){
         vinhoBDHelper.adicionarVinhoBD(vinho);
@@ -117,7 +145,7 @@ public class SingletonManager {
 
     //region #MÉTODOS - API #
     public void getAllVinhosAPI(final Context context){
-        if(!VinhoJsonParser.isConnectionInternet(context)){
+        if(!ConnectivityJsonParser.isConnectionInternet(context)){
             Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
 
             //TODO:CARREGAR vinhos DA BD ATRAVÉS DO METHOD getAllvinhosBD
@@ -155,7 +183,7 @@ public class SingletonManager {
 
     //TODO: FALTA COLOCAR O PARAMETRO DE TOKEN
     public void adicionarVinhoAPI(final Vinho vinho, final Context context) {
-        if (!VinhoJsonParser.isConnectionInternet(context)) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
             Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -203,7 +231,7 @@ public class SingletonManager {
     }
 
     public void editarVinhoAPI(final Vinho vinho, final Context context){
-        if(!VinhoJsonParser.isConnectionInternet(context)){
+        if(!ConnectivityJsonParser.isConnectionInternet(context)){
             Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
         }else {
             StringRequest request = new StringRequest(Request.Method.PUT, mUrlAPIVinhos + '/' + vinho.getId(), new Response.Listener<String>() {
@@ -239,7 +267,7 @@ public class SingletonManager {
     }
 
     public void removerVinhoAPI(final Vinho vinho, final Context context){
-        if(!VinhoJsonParser.isConnectionInternet(context)){
+        if(!ConnectivityJsonParser.isConnectionInternet(context)){
             Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
         }else {
             StringRequest request = new StringRequest(Request.Method.DELETE, mUrlAPIVinhos + '/' + vinho.getId(), new Response.Listener<String>() {
@@ -261,6 +289,338 @@ public class SingletonManager {
             volleyQueue.add(request);
         }
     }
+
+    public void getCartAPI(Context context) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, mUlAPICart + "?access-token=" + token, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("--> Resposta da API: " + response.toString());
+
+                        Carrinho carrinho = CarrinhoJsonParser.parseCarrinho(response);
+
+                        if (carrinho != null) {
+                            System.out.println("--> Carrinho: " + carrinho.toString());
+
+                            // Atualiza a lista de itens do carrinho
+                            itensCarrinho = carrinho.getItems();
+
+                            if (itensCarrinho != null && !itensCarrinho.isEmpty()) {
+                                System.out.println("--> Itens do Carrinho:" + itensCarrinho);
+                                for (ItemCarrinho item : itensCarrinho) {
+                                    System.out.println(item.toString());
+                                }
+                            } else {
+                                System.out.println("--> Itens do Carrinho estão vazios ou nulos!");
+                            }
+
+                            // Notifica o adaptador para atualizar a lista
+                            if (carrinhoListener != null) {
+                                carrinhoListener.onRefreshListaCarrinho(itensCarrinho);
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.err.println("Erro ao obter carrinho: " + error.getMessage());
+                    }
+                }
+        );
+
+        volleyQueue.add(request);
+    }
+
+    public void addItemCarrinhoAPI(final ItemCarrinho item, final Context context) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StringRequest request = new StringRequest(Request.Method.POST,
+                mUlAPICart + "/items?access-token=" + token,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println("-->POSTAPI: " + response);
+                        Toast.makeText(context, "Vinho adicionado ao carrinho!", Toast.LENGTH_SHORT).show();
+                        getCartAPI(context); // Atualiza a lista do carrinho
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao adicionar vinho: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("product_id", String.valueOf(item.getProductId()));
+                params.put("quantity", String.valueOf(item.getQuantity()));
+                System.out.println("--> info Parametros api "+ item.getProductId() +" e " +  item.getQuantity());
+                return params;
+            }
+
+        };
+
+        volleyQueue.add(request);
+    }
+
+
+    public void removerItemCarrinhoAPI(Context context, int itemId, CarrinhoListener listener) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        StringRequest request = new StringRequest(Request.Method.DELETE,
+                mUlAPICart + "/items/" + itemId + "?access-token=" + token,
+
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println("--> Id produto"+ itemId);
+                        System.out.println("--> ✅ Item removido com sucesso!");
+                        getCartAPI(context); // Atualiza a lista do carrinho
+                        if (listener != null) {
+                            listener.onCarrinhoAlterado();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("--> ❌ Erro ao remover item: " + error.getMessage());
+                        if (listener != null) {
+                            listener.onErroRemover(error.getMessage());
+                        }
+                    }
+                });
+
+        volleyQueue.add(request);
+    }
+
+    public void limparCarrinho(final Context context, final CarrinhoListener listener) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = mUlAPICart + "?access-token=" + token; // Endpoint para limpar o carrinho
+
+        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println("--> Carrinho limpo: " + response);
+                        if (listener != null) {
+                            listener.onCarrinhoAlterado();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao limpar o carrinho: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (listener != null) {
+                            listener.onErroRemover(error.getMessage());
+                        }
+                    }
+                }
+        );
+        volleyQueue.add(request);
+    }
+
+
+
+    public double getTotalCarrinho() {
+        double total = 0.0;
+        for (ItemCarrinho item : itensCarrinho) {
+            total += item.getPrice() * item.getQuantity(); // Multiplica preço pela quantidade
+        }
+        return total;
+    }
+
+    public void finalizarCompra(final Context context, ArrayList<ItemCarrinho> itensCarrinho, final CheckoutListener listener) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Cria o JSONArray de itens
+        JSONArray items = new JSONArray();
+        for (ItemCarrinho item : itensCarrinho) {
+            try {
+                JSONObject itemJson = new JSONObject();
+                itemJson.put("product_id", item.getProductId());
+                System.out.println("--> produto: " + item.getProductId());
+                itemJson.put("quantity", item.getQuantity());
+                System.out.println("--> quantidade: " + item.getQuantity());
+                items.put(itemJson);
+                System.out.println("--> item json: " + itemJson);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Erro ao criar o JSON dos itens", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        // Cria o objeto JSON do corpo da requisição
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("items", items);
+            System.out.println("--> items: " + items);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Erro ao criar o corpo da requisição", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = "http://51.20.254.239:8080/api/checkout/create?access-token=" + token;
+
+        // Cria a requisição usando JsonObjectRequest, que lida com JSONObject
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // Obter dados da resposta
+                            JSONObject order = response.getJSONObject("order");
+                            System.out.println("--> order " + order);
+                            JSONObject invoice = response.getJSONObject("invoice");
+                            System.out.println("--> invoice " + invoice);
+                            int invoiceId = invoice.getInt("id");
+                            System.out.println("--> invoiceId " + invoiceId);
+                            double totalPrice = invoice.getDouble("total_amount");
+                            System.out.println("--> totalPrice " + totalPrice);
+
+                            System.out.println("--> invoiceID RETORNADO DA API: " + invoiceId);
+                            // Chama o método de sucesso do listener
+                            listener.onFinalizarCompraSucesso(invoiceId, totalPrice);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onErroFinalizarCompra("Erro ao processar a resposta");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        listener.onErroFinalizarCompra("Erro ao criar o pedido: " + error.getMessage());
+                    }
+                });
+
+        volleyQueue.add(request);
+    }
+
+
+
+
+    public void pagarPedido(final Context context, int invoiceId, final CheckoutListener listener) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // URL da API de pagamento
+        String url = "http://51.20.254.239:8080/api/checkout/" + invoiceId + "?access-token=" + token;
+        System.out.println("--> invoiceiDentifi " + invoiceId);
+
+        // Requisição POST
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject responseObj = new JSONObject(response);
+                            String message = responseObj.getString("message");
+
+                            if (message.equals("Pagamento realizado.")) {
+                                // Extraia os dados da fatura
+                                JSONObject invoice = responseObj.getJSONObject("invoice");
+                                int newInvoiceId = invoice.getInt("id"); // ID da fatura
+                                int orderId = invoice.getInt("order_id"); // ID do pedido
+                                double totalAmount = invoice.getDouble("total_amount");
+                                String status = invoice.getString("status");
+
+                                // Notifica o listener com os dados completos
+                                listener.onPagamentoSucesso(newInvoiceId, orderId, totalAmount, status);
+                            } else {
+                                listener.onErroPagamento("Erro ao realizar o pagamento");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onErroPagamento("Erro ao processar o pagamento");
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao realizar pagamento: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+        volleyQueue.add(request);
+    }
+
+
+
+
+
+
 
     public void loginAPI(String email, String password, final Context context) {
         StringRequest request = new StringRequest(Request.Method.POST, mUrlAPILogin, new Response.Listener<String>() {

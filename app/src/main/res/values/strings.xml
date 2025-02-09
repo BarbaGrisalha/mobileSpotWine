@@ -11,4 +11,8 @@
     <string name="ndClose">Close</string>
     <string name="menu_txt_lista">Lista de Vinhos</string>
     <string name="menu_txt_email">Email</string>
+    <string name="menu_cart">Carrinho</string>
+    <string name="remove_item">remover item</string>
+    <string name="add_to_cart">Adicionar ao carrinho</string>
+    <string name="continuar_comprando">Continuar Comprando</string>
 </resources>

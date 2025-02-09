@@ -22,4 +22,5 @@
                 android:title="@string/menu_txt_email" />
         </menu>
     </item>
+
 </menu>

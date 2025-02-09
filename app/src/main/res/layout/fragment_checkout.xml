@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_checkout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- RecyclerView para exibir os itens do pedido -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCarrinhoCheckout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <!-- Texto para o total do pedido -->
+    <TextView
+        android:id="@+id/txtTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total: €0.00"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"/>
+
+    <!-- Botão para pagar -->
+    <Button
+        android:id="@+id/btnPagar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/purple_500"
+        android:text="Pagar"
+        android:textColor="@android:color/white" />
+</LinearLayout>
