@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
@@ -698,72 +699,72 @@ public class SingletonManager {
         volleyQueue.add(request);
     }
 
-//    public void editarPostAPI(final Post post, final Context context) {
-//        if (!PostJsonParser.isConnectionInternet(context)) {
-//            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
-//
-//        StringRequest request = new StringRequest(Request.Method.PUT, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
+    public void editarPostAPI(final Post post, final Context context) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        System.out.println("--> id do post: "+post.getId());
+        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
+
+        StringRequest request = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 //                        editarPostBD(post);
-//
-//                        if (postListener != null) {
-//                            postListener.onRefreshListaPosts(getAllPostsBD());
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(context, "Erro ao editar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }) {
-//            @Nullable
-//            @Override
-//            protected Map<String, String> getParams() {
-//                Map<String, String> params = new HashMap<>();
-//                params.put("title", post.getTitulo());
-//                params.put("content", post.getConteudo());
-//                return params;
-//            }
-//        };
-//
-//        volleyQueue.add(request);
-//    }
-//
-//    public void deletarPostAPI(final Post post, final Context context) {
-//        if (!PostJsonParser.isConnectionInternet(context)) {
-//            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
-//
-//        StringRequest request = new StringRequest(Request.Method.DELETE, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
+
+                        if (postListener != null) {
+                            postListener.onRefreshDetalhesPost(MenuMainActivity.EDIT);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao editar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("title", post.getTitle());
+                params.put("content", post.getContent());
+                return params;
+            }
+        };
+
+        volleyQueue.add(request);
+    }
+
+    public void deletarPostAPI(final Post post, final Context context) {
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
+
+        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 //                        removerPostBD(post.getId());
-//
-//                        if (postListener != null) {
-//                            postListener.onRefreshListaPosts(getAllPostsBD());
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(context, "Erro ao deletar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//        volleyQueue.add(request);
-//    }
+
+                        if (postListener != null) {
+                            postListener.onRefreshDetalhesPost(MenuMainActivity.DELETE);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao deletar post: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        volleyQueue.add(request);
+    }
 
 
     public void loginAPI(String email, String password, final Context context) {

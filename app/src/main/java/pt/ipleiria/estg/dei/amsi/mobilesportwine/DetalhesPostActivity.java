@@ -71,7 +71,7 @@ public class DetalhesPostActivity extends AppCompatActivity implements PostListe
                 post.setTitle(etTitulo.getText().toString());
                 post.setContent(etConteudo.getText().toString());
 
-//                SingletonManager.getInstance(getApplicationContext()).editarPostAPI(post, getApplicationContext());
+                SingletonManager.getInstance(getApplicationContext()).editarPostAPI(post, getApplicationContext());
 
             } else {
                 // Criar novo post
@@ -118,29 +118,29 @@ public class DetalhesPostActivity extends AppCompatActivity implements PostListe
         return false;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        if (item.getItemId() == R.id.itemRemover) {
-//            if (!ConnectivityJsonParser.isConnectionInternet(getApplicationContext())) {
-//                Toast.makeText(this, "Não tem ligação à rede", Toast.LENGTH_SHORT).show();
-//            } else {
-//                dialogRemover();
-//            }
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.itemRemover) {
+            if (!ConnectivityJsonParser.isConnectionInternet(getApplicationContext())) {
+                Toast.makeText(this, "Não tem ligação à rede", Toast.LENGTH_SHORT).show();
+            } else {
+                dialogRemover();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-//    private void dialogRemover() {
-//        new AlertDialog.Builder(this)
-//                .setTitle(R.string.txt_titulo_remover_post)
-//                .setMessage("Pretende remover o Post?")
-//                .setPositiveButton(android.R.string.yes, (dialogInterface, i) ->
-//                        SingletonManager.getInstance(getApplicationContext()).removerPostAPI(post, getApplicationContext()))
-//                .setNegativeButton(android.R.string.no, null)
-//                .setIcon(android.R.drawable.ic_delete)
-//                .show();
-//    }
+    private void dialogRemover() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.txt_titulo_remover_post)
+                .setMessage("Pretende remover o Post?")
+                .setPositiveButton(android.R.string.yes, (dialogInterface, i) ->
+                        SingletonManager.getInstance(getApplicationContext()).deletarPostAPI(post, getApplicationContext()))
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_delete)
+                .show();
+    }
 
     @Override
     public void onRefreshDetalhesPost(int op) {
