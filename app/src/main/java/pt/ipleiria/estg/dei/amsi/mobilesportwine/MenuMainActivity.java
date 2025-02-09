@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
 
@@ -78,8 +79,6 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
             editorUser.putString("loggedEmail", email);
             editorUser.apply();
         }
-
-
     }
 
     @Override
@@ -113,16 +112,18 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         Fragment fragment = null;
 
         if (item.getItemId() == R.id.navLista) {
             // System.out.println("-->Nav Estatico");
             // Toast.makeText(this, "-->Nav Estatico", Toast.LENGTH_SHORT).show();
-
             fragment = new ListaVinhosFragment();
             setTitle(item.getTitle());
-        } else if (item.getItemId() == R.id.navEmail) {
+        } else if(item.getItemId() == R.id.navOrder){
+            //Abrir OrdersActivity
+            Intent intent = new Intent(this, OrdersActivity.class);
+            startActivity(intent);
+        }else if (item.getItemId() == R.id.navEmail) {
             // System.out.println("-->Nav Email");
             // Toast.makeText(this, "-->Nav Email", Toast.LENGTH_SHORT).show();
 

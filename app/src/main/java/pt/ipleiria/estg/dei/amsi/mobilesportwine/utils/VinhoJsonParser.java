@@ -9,7 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Order;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Vinho;
 
 public class VinhoJsonParser {
@@ -68,4 +70,12 @@ public class VinhoJsonParser {
 
 
 
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public static List<Order> parserJsonOrders(JSONArray ordersArray) {
+        return null;//só para não se perder
+    }
 }
