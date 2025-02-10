@@ -17,7 +17,8 @@
             android:background="?attr/colorPrimary"
             android:theme="?attr/actionBarTheme"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:title="Mobile Sport Wine" /> <!-- Título da Toolbar (opcional) -->
+            app:title="Mobile SpotWine" /> <!-- Título da Toolbar (opcional) -->
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

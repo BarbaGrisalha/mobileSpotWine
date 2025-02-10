@@ -39,14 +39,12 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
     private FragmentManager fragmentManager;
 
-    private CarrinhoAdaptador carrinhoAdaptador;
-    private ArrayList<ItemCarrinho> listaItens = new ArrayList<>();
-    private ArrayList<Vinho> listaVinhos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_main);
+        SingletonManager.getInstance(this).getFavoritosAPI(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,7 +79,8 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_carrinho, menu); // Infla o menu da Toolbar
+        getMenuInflater().inflate(R.menu.menu_carrinho, menu);
+        getMenuInflater().inflate(R.menu.menu_favoritos, menu);// Infla o menu da Toolbar
         return true;
     }
 
@@ -138,7 +137,6 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -150,9 +148,19 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
                     .replace(R.id.contentFragment, fragment)
                     .commit();
             return true;
+        } else if (id == R.id.navFavoritos) {
+            // Abre o FavoritosFragment (você deve criar esse fragmento)
+            FavoritosFragment fragment = new FavoritosFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.contentFragment, fragment)
+                    .commit();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
 
 }

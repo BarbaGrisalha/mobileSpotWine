@@ -19,4 +19,6 @@
     <string name="adicionar_post">Adicionar Post</string>
     <string name="txt_titulo_remover_post">Remover Post</string>
     <string name="description">Adicionar Post</string>
+    <string name="menu_favoritos">menu favoritos</string>
+    <string name="add_to_favorites">Adicionar aos favoritos</string>
 </resources>

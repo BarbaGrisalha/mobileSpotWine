@@ -1,96 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <View
-        android:id="@+id/view2"
-        android:layout_width="wrap_content"
-        android:layout_height="15dp" />
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:padding="12dp">
 
+        <!-- Imagem do Produto -->
         <ImageView
-            android:id="@+id/imgCapa"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            app:srcCompat="@drawable/wine_default" />
+            android:id="@+id/imgCapaVinho"
+            android:layout_width="361dp"
+            android:layout_height="246dp"
+            android:background="@color/colorGrayLight"
+            android:scaleType="centerCrop"
+            android:src="@drawable/wine_default" />
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Ícone de Favorito no topo direito -->
+        <ImageButton
+            android:id="@+id/btnFavorite"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignEnd="@id/imgCapaVinho"
+            android:layout_alignTop="@id/imgCapaVinho"
+            android:layout_margin="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="5dp"
+            android:tint="@color/red"
+            android:src="@drawable/ic_menu_unfavorited"
+            android:contentDescription="@string/add_to_favorites" />
+
+        <!-- Nome do Produto -->
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingLeft="10dp">
+            android:layout_below="@id/imgCapaVinho"
+            android:layout_marginTop="8dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:text="Nome do Vinho" />
 
+        <!-- Categoria -->
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvName"
+            android:textSize="14sp"
+            android:textColor="@color/colorGray"
+            android:text="Categoria: Tinto" />
 
-                <TextView
-                    android:id="@+id/tvName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:layout_weight="1" />
+        <!-- Descrição -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvCategory"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="@color/colorGray"
+            android:text="Uma breve descrição do vinho..." />
 
+        <!-- Preço -->
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvDescription"
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimary"
+            android:text="€15.99" />
 
-                <TextView
-                    android:id="@+id/tvDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:layout_weight="1" />
+        <!-- Estoque -->
+        <TextView
+            android:id="@+id/tvStock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvPrice"
+            android:textSize="14sp"
+            android:textColor="@color/colorGray"
+            android:text="Em estoque: 10 unidades" />
 
+        <!-- Botões de quantidade e adicionar ao carrinho -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvStock"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center">
 
-            <TextView
-                android:id="@+id/tvCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"/>
+            <!-- Input de Quantidade -->
+            <EditText
+                android:id="@+id/etQuantidade"
+                android:layout_width="60dp"
+                android:layout_height="48dp"
+                android:backgroundTint="@color/colorGray"
+                android:inputType="number"
+                android:text="1"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_marginEnd="8dp" />
 
-            <TextView
-                android:id="@+id/tvStock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_weight="1" />
-
-
+            <!-- Botão de Adicionar ao Carrinho -->
+            <ImageButton
+                android:id="@+id/btnAddToCart"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@color/purple_500"
+                android:contentDescription="@string/add_to_cart"
+                android:padding="8dp"
+                android:src="@drawable/ic_cart_add" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/etQuantidade"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:backgroundTint="#ABABAB"
-            android:inputType="number"
-            android:text="1"
-            android:textAlignment="center" />
-
-        <ImageButton
-            android:id="@+id/btnAddToCart"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="0.1"
-            android:background="@color/color_purple500"
-            android:contentDescription="@string/add_to_cart"
-            android:padding="8dp"
-            android:src="@drawable/ic_cart_add" />
-    </LinearLayout>
-</LinearLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

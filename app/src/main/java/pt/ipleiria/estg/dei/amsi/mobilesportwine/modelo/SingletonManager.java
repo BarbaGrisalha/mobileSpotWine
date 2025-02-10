@@ -26,7 +26,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.MenuMainActivity;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.R;
@@ -49,6 +51,8 @@ public class SingletonManager {
     private ArrayList<Vinho> vinhos;
     private ArrayList<ItemCarrinho> itensCarrinho;
     private ArrayList<Post> posts;
+    private Context context;
+    private Set<Integer> favoritos; // Usando um Set para evitar duplicação de IDs
 
 
     private VinhoBDHelper  vinhoBDHelper = null;
@@ -80,6 +84,8 @@ public class SingletonManager {
         //gerarDadosDinamico();
         vinhos = new ArrayList<>();
         vinhoBDHelper = new VinhoBDHelper(context);
+        this.favoritos = new HashSet<>();
+        this.context = context;
 
     }
 
@@ -765,6 +771,133 @@ public class SingletonManager {
 
         volleyQueue.add(request);
     }
+
+    // Método para adicionar um produto aos favoritos
+    public void addFavorito(int produtoId) {
+        if (!favoritos.contains(produtoId)) {
+            favoritos.add(produtoId); // Adiciona se não estiver já favoritado
+            // Chama a API para adicionar no backend
+            addFavoritoAPI(produtoId);
+            Toast.makeText(context, "Adicionado aos favoritos!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+        // Método para remover um produto dos favoritos
+        public void removeFavorito(int produtoId) {
+            if (favoritos.contains(produtoId)) {
+                favoritos.remove(produtoId); // Remove da lista
+                // Chama a API para remover no backend
+                removeFavoritoAPI(produtoId);
+                Toast.makeText(context, "Removido dos favoritos!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        // Método para verificar se o produto está nos favoritos
+        public boolean isFavorito(int produtoId) {
+            return favoritos.contains(produtoId);
+        }
+
+        // Adiciona favorito no backend (API)
+        private void addFavoritoAPI(int produtoId) {
+            if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+                Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+            String token = sharedPreferences.getString("TOKEN", null);
+
+            if (token == null) {
+                Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String url = "http://51.20.254.239:8080/api/favorite/"+produtoId+"?access-token="+token;
+            StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+                // Sucesso ao adicionar aos favoritos
+               addFavorito(produtoId);
+               getFavoritosAPI(context);
+
+            }, error -> {
+                // Trate erros aqui
+                Log.e("Favoritos", "Erro ao adicionar aos favoritos: " + error.getMessage());
+            });
+            volleyQueue.add(request);
+        }
+
+        // Remove favorito no backend (API)
+        private void removeFavoritoAPI(int produtoId) {
+            if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+                Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+            String token = sharedPreferences.getString("TOKEN", null);
+
+            if (token == null) {
+                Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String url = "http://51.20.254.239:8080/api/favorite/"+produtoId+"?access-token="+token;
+            StringRequest request = new StringRequest(Request.Method.DELETE, url, response -> {
+                // Sucesso ao remover dos favoritos
+               removeFavorito(produtoId);
+               getFavoritosAPI(context);
+            }, error -> {
+                // Trate erros aqui
+                Log.e("Favoritos", "Erro ao remover dos favoritos: " + error.getMessage());
+            });
+
+            volleyQueue.add(request);
+        }
+
+    public void getFavoritosAPI(Context context) {
+
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = "http://51.20.254.239:8080/api/favorite?access-token="+ token;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray favoritosArray = response.getJSONArray("favorite_ids");
+                        favoritos.clear();
+                        for (int i = 0; i < favoritosArray.length(); i++) {
+                            favoritos.add(favoritosArray.getInt(i));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                },
+                error -> {
+                    Log.e("API_ERROR", "Erro ao buscar favoritos: " + error.getMessage());
+                }
+        );
+
+        volleyQueue.add(request);
+    }
+
+
+
+
+    // Retorna a lista de favoritos
+        public Set<Integer> getFavoritos() {
+            return favoritos;
+        }
 
 
     public void loginAPI(String email, String password, final Context context) {

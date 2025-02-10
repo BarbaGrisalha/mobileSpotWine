@@ -68,7 +68,7 @@ public class ListaVinhosAdaptador extends BaseAdapter {
     private class ViewHolderLista {
         private TextView tvName, tvDescription, tvCategory, tvPrice, tvStock;
         private ImageView imgCapa;
-        private ImageButton btnAddToCart;
+        private ImageButton btnAddToCart, btnFavorite;
         private EditText etQuantidade;
 
         public ViewHolderLista(View view) {
@@ -77,8 +77,9 @@ public class ListaVinhosAdaptador extends BaseAdapter {
             tvCategory = view.findViewById(R.id.tvCategory);
             tvPrice = view.findViewById(R.id.tvPrice);
             tvStock = view.findViewById(R.id.tvStock);
-            imgCapa = view.findViewById(R.id.imgCapa);
+            imgCapa = view.findViewById(R.id.imgCapaVinho);
             btnAddToCart = view.findViewById(R.id.btnAddToCart);
+            btnFavorite = view.findViewById(R.id.btnFavorite);
             etQuantidade = view.findViewById(R.id.etQuantidade);
         }
 
@@ -114,9 +115,26 @@ public class ListaVinhosAdaptador extends BaseAdapter {
 
                 Toast.makeText(context, "Vinho adicionado ao carrinho!", Toast.LENGTH_SHORT).show();
             });
+
+            if (SingletonManager.getInstance(context).isFavorito(vinho.getId())) {
+                btnFavorite.setImageResource(R.drawable.ic_menu_favorited);
+            } else {
+                btnFavorite.setImageResource(R.drawable.ic_menu_unfavorited);
+            }
+
+            btnFavorite.setOnClickListener(v -> {
+                if (SingletonManager.getInstance(context).isFavorito(vinho.getId())) {
+                    SingletonManager.getInstance(context).removeFavorito(vinho.getId());
+                    btnFavorite.setImageResource(R.drawable.ic_menu_unfavorited);
+                } else {
+                    SingletonManager.getInstance(context).addFavorito(vinho.getId());
+                    btnFavorite.setImageResource(R.drawable.ic_menu_favorited);
+                }
+            });
+
         }
 
-        // Função para verificar se os dados são válidos antes de adicionar ao carrinho
+        //TODO: TALVEZ FAZER UM METODO PUBLICO EM OUTRO LUGAR PARA OUTRAS PARTES USAREM TBM
         private boolean isValidToCart(Vinho vinho) {
             String quantidadeStr = etQuantidade.getText().toString().trim();
 

@@ -22,7 +22,6 @@ import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonManager;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Vinho;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ConnectivityJsonParser;
-import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
 public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoListener {
 
@@ -48,7 +47,7 @@ public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoLis
         etCategory = findViewById(R.id.etCategory);
         etStock = findViewById(R.id.etStock);
         etPrice = findViewById(R.id.etPrice);
-        imgCapa = findViewById(R.id.imgCapa);
+        imgCapa = findViewById(R.id.imgCapaVinho);
 
         fabGuardar = findViewById(R.id.fabGuardar);
 
