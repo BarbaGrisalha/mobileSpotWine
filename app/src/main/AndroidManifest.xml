@@ -17,6 +17,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ServerManagerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ServerMangerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
             android:name=".DetalhesPostActivity"
             android:exported="false" />
         <activity
@@ -27,13 +36,10 @@
             android:name=".MenuMainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.MobileSportWine.NoActionBar">
-
-        </activity>
+            android:theme="@style/Theme.MobileSportWine.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true" >
-
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

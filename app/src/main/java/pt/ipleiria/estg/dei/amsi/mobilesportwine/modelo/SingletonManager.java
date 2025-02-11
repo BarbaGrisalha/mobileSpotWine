@@ -1,7 +1,10 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,6 +22,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.LoginActivity;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.MenuMainActivity;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.R;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.adaptadores.ReviewAdaptador;
@@ -59,17 +64,21 @@ public class SingletonManager {
     private ArrayList<Post> posts;
     private ArrayList<Review> reviews;
     private Context context;
-    private Set<Integer> favoritos; // Usando um Set para evitar duplicação de IDs
+    private Set<Integer> favoritos;
+
+    private static final String API_HOSTNAME_KEY = "API_HOSTNAME";
+    private String apiHostname;
 
 
     private VinhoBDHelper  vinhoBDHelper = null;
 
     private static RequestQueue volleyQueue = null;
 
-    private static final String mUrlAPIVinhos = "http://51.20.254.239:8080/api/product";
-    private static final String mUrlAPILogin = "http://51.20.254.239:8080/api/user/login";
-    private static final String mUlAPICart = "http://51.20.254.239:8080/api/cart";
-    private static final String URL_API_POSTS = "http://51.20.254.239:8080/api/blog-post";
+//    private static final String mUrlAPIVinhos = "http://51.20.254.239:8080/api/product";
+//    private static final String mUrlAPILogin = "http://51.20.254.239:8080/api/user/login";
+//    private static final String mUrlAPIRegister = "http://51.20.254.239:8080/api/user/registo";
+//    private static final String mUlAPICart = "http://51.20.254.239:8080/api/cart";
+//    private static final String URL_API_POSTS = "http://51.20.254.239:8080/api/blog-post";
 
     private VinhosListener vinhosListener;
     private VinhoListener vinhoListener;
@@ -81,6 +90,7 @@ public class SingletonManager {
     private ReviewListener reviewListener;
     private InvoiceListener invoiceListener;
 
+
     public static synchronized SingletonManager getInstance(Context context) {
         if (instance == null) {
             instance = new SingletonManager(context);
@@ -89,12 +99,47 @@ public class SingletonManager {
         return instance;
     }
 
+    private String getApiHostname() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(API_HOSTNAME_KEY, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(API_HOSTNAME_KEY, null); // Default se não existir
+    }
+
+    // 🔹 Métodos para obter URLs dinâmicas
+    public String getUrlApiVinhos() {
+        return apiHostname + "/api/product";
+    }
+
+    public String getUrlApiLogin() {
+        return apiHostname + "/api/user/login";
+    }
+
+    public String getUrlApiRegister() {
+        return apiHostname + "/api/user/registo";
+    }
+
+    public String getUrlApiCart() {
+        return apiHostname + "/api/cart";
+    }
+
+    public String getUrlApiPosts() {
+        return apiHostname + "/api/blog-post";
+    }
+
+    public String getUrlApiFavorites() {
+        return apiHostname + "/api/favorite";
+    }
+
+    public String getUrlApiReview() {
+        return apiHostname + "/api/review";
+    }
+
     private SingletonManager(Context context) {
         //gerarDadosDinamico();
         vinhos = new ArrayList<>();
         vinhoBDHelper = new VinhoBDHelper(context);
         this.favoritos = new HashSet<>();
         this.context = context;
+        this.apiHostname = getApiHostname();
 
     }
 
@@ -201,7 +246,8 @@ public class SingletonManager {
             }
 
         }else{
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, mUrlAPIVinhos,
+            String url = SingletonManager.getInstance(context).getUrlApiVinhos();
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url,
                     null, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
@@ -242,19 +288,16 @@ public class SingletonManager {
             Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
             return;
         }
+        String url = SingletonManager.getInstance(context).getUrlApiCart();
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, mUlAPICart + "?access-token=" + token, null,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + "?access-token=" + token, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println("--> Resposta da API: " + response.toString());
 
                         Carrinho carrinho = CarrinhoJsonParser.parseCarrinho(response);
 
                         if (carrinho != null) {
-                            System.out.println("--> Carrinho: " + carrinho.toString());
-
-                            // Atualiza a lista de itens do carrinho
                             itensCarrinho = carrinho.getItems();
 
                             if (itensCarrinho != null && !itensCarrinho.isEmpty()) {
@@ -298,8 +341,10 @@ public class SingletonManager {
             return;
         }
 
+        String url = SingletonManager.getInstance(context).getUrlApiCart();
+
         StringRequest request = new StringRequest(Request.Method.POST,
-                mUlAPICart + "/items?access-token=" + token,
+                url + "/items?access-token=" + token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -338,8 +383,10 @@ public class SingletonManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN", null);
 
+        String url = SingletonManager.getInstance(context).getUrlApiCart();
+
         StringRequest request = new StringRequest(Request.Method.DELETE,
-                mUlAPICart + "/items/" + itemId + "?access-token=" + token,
+                url + "/items/" + itemId + "?access-token=" + token,
 
                 new Response.Listener<String>() {
                     @Override
@@ -379,9 +426,9 @@ public class SingletonManager {
             return;
         }
 
-        String url = mUlAPICart + "?access-token=" + token; // Endpoint para limpar o carrinho
+        String url = SingletonManager.getInstance(context).getUrlApiPosts();
 
-        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+        StringRequest request = new StringRequest(Request.Method.DELETE, url + "?access-token=" + token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -556,7 +603,10 @@ public class SingletonManager {
     }
 
     public void getAllPostsAPI(final Context context) {
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL_API_POSTS, null,
+        // Obtém a URL dinâmica do SingletonManager
+        String url = SingletonManager.getInstance(context).getUrlApiPosts();
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -572,8 +622,10 @@ public class SingletonManager {
                         Toast.makeText(context, "Erro ao buscar posts: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
         volleyQueue.add(request);
     }
+
 
     public void adicionarPostAPI(final Post post, final Context context) {
         if (!ConnectivityJsonParser.isConnectionInternet(context)) {
@@ -590,9 +642,9 @@ public class SingletonManager {
         String token = sharedPreferences.getString("TOKEN", null);
 
 
-        String url = "http://51.20.254.239:8080/api/blog-post?access-token="+token;
+        String url = SingletonManager.getInstance(context).getUrlApiPosts();
 
-        StringRequest request = new StringRequest(Request.Method.POST, url,
+        StringRequest request = new StringRequest(Request.Method.POST, url + "?access-token="+token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -626,10 +678,13 @@ public class SingletonManager {
             Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
             return;
         }
-        System.out.println("--> id do post: "+post.getId());
-        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
 
-        StringRequest request = new StringRequest(Request.Method.PUT, url,
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        String url = SingletonManager.getInstance(context).getUrlApiPosts();
+
+        StringRequest request = new StringRequest(Request.Method.PUT, url+"/"+post.getId() + "?access-token="+token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -665,9 +720,12 @@ public class SingletonManager {
             return;
         }
 
-        String url = "http://51.20.254.239:8080/api/blog-post/" + post.getId() + "?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
 
-        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+        String url = SingletonManager.getInstance(context).getUrlApiPosts();
+
+        StringRequest request = new StringRequest(Request.Method.DELETE, url+"/"+ post.getId() + "?access-token="+token,
                 new Response.Listener<String>() {
 
                     @Override
@@ -693,7 +751,7 @@ public class SingletonManager {
     public void addFavorito(int produtoId) {
         if (!favoritos.contains(produtoId)) {
             favoritos.add(produtoId); // Adiciona se não estiver já favoritado
-            // Chama a API para adicionar no backend
+
             addFavoritoAPI(produtoId);
             Toast.makeText(context, "Adicionado aos favoritos!", Toast.LENGTH_SHORT).show();
         }
@@ -730,8 +788,10 @@ public class SingletonManager {
                 return;
             }
 
-            String url = "http://51.20.254.239:8080/api/favorite/"+produtoId+"?access-token="+token;
-            StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            String url = SingletonManager.getInstance(context).getUrlApiFavorites();
+
+            StringRequest request = new StringRequest(Request.Method.POST, url+"/"+produtoId+
+                    "?access-token="+token, response -> {
                 // Sucesso ao adicionar aos favoritos
                addFavorito(produtoId);
                getFavoritosAPI(context);
@@ -758,8 +818,8 @@ public class SingletonManager {
                 return;
             }
 
-            String url = "http://51.20.254.239:8080/api/favorite/"+produtoId+"?access-token="+token;
-            StringRequest request = new StringRequest(Request.Method.DELETE, url, response -> {
+            String url = SingletonManager.getInstance(context).getUrlApiFavorites();
+            StringRequest request = new StringRequest(Request.Method.DELETE, url+"/"+produtoId+"?access-token="+token, response -> {
                 // Sucesso ao remover dos favoritos
                removeFavorito(produtoId);
                getFavoritosAPI(context);
@@ -786,9 +846,9 @@ public class SingletonManager {
             return;
         }
 
-        String url = "http://51.20.254.239:8080/api/favorite?access-token="+ token;
+        String url = SingletonManager.getInstance(context).getUrlApiFavorites();
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url+"?access-token="+ token, null,
                 response -> {
                     try {
                         JSONArray favoritosArray = response.getJSONArray("favorite_ids");
@@ -817,9 +877,9 @@ public class SingletonManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
         int userId = sharedPreferences.getInt("USER_ID", -1);
 
-        String url = "http://51.20.254.239:8080/api/review/" + productId;
+        String url = SingletonManager.getInstance(context).getUrlApiReview();
 
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url+"/"+productId, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -858,11 +918,10 @@ public class SingletonManager {
             return;
         }
 
-        // URL do endpoint para adicionar uma review
-        String url = "http://51.20.254.239:8080/api/review?access-token="+token;
+        String url = SingletonManager.getInstance(context).getUrlApiReview();
 
         // Cria a requisição POST
-        StringRequest request = new StringRequest(Request.Method.POST, url,
+        StringRequest request = new StringRequest(Request.Method.POST, url+"?access-token="+token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -912,11 +971,9 @@ public class SingletonManager {
             return;
         }
 
-        // URL do endpoint para editar uma review (substitua {id} pelo ID da review)
-        String url = "http://51.20.254.239:8080/api/review/" + review.getId() + "?access-token="+token;
+        String url = SingletonManager.getInstance(context).getUrlApiReview();
 
-        // Cria a requisição PUT
-        StringRequest request = new StringRequest(Request.Method.PUT, url,
+        StringRequest request = new StringRequest(Request.Method.PUT, url+"/"+review.getId() + "?access-token="+token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -967,11 +1024,10 @@ public class SingletonManager {
             return;
         }
 
-        // URL do endpoint para deletar uma review (substitua {id} pelo ID da review)
-        String url = "http://51.20.254.239:8080/api/review/" + reviewId + "?access-token=" + token;
+        String url = SingletonManager.getInstance(context).getUrlApiReview();
 
         // Cria a requisição DELETE
-        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+        StringRequest request = new StringRequest(Request.Method.DELETE, url+"/"+reviewId+"?access-token=" + token,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -1031,15 +1087,14 @@ public class SingletonManager {
 
 
     public void loginAPI(String email, String password, final Context context) {
-        StringRequest request = new StringRequest(Request.Method.POST, mUrlAPILogin,
+        String url = SingletonManager.getInstance(context).getUrlApiLogin();
+        System.out.println("--> url do login: "+url);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         String token = LoginJsonParser.parseLoginToken(response); // Pega o token
                         int userId = LoginJsonParser.parseUserId(response); // Pega o ID do usuário
-
-                        System.out.println("---- token " + token);
-                        System.out.println("---- userId " + userId);
 
                         if (loginListener != null)
                             loginListener.onValidateLogin(token, userId, email, context);
@@ -1062,6 +1117,46 @@ public class SingletonManager {
         };
         volleyQueue.add(request);
     }
+
+    public void registerAPI(String username, String email, String password, String nif, String phone, final Context context) {
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+            jsonBody.put("email", email);
+            jsonBody.put("password", password);
+            jsonBody.put("nif", nif);
+            jsonBody.put("phone_number", phone);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = SingletonManager.getInstance(context).getUrlApiRegister();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+                response -> {
+                    Snackbar.make(((Activity) context).findViewById(android.R.id.content),
+                            "Conta criada com sucesso!", Snackbar.LENGTH_LONG).show();
+                    new Handler().postDelayed(() -> {
+                        Intent intent = new Intent(context, LoginActivity.class);
+                        context.startActivity(intent);
+                        ((Activity) context).finish();
+                    }, 1500);
+                },
+                error -> {
+                    Log.e("RegisterAPI", "Erro ao registrar: ", error);
+                    Toast.makeText(context, "Erro ao criar conta", Toast.LENGTH_SHORT).show();
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        Volley.newRequestQueue(context).add(request);
+    }
+
+
 
 
 

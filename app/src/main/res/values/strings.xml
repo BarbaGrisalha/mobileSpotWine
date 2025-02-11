@@ -21,4 +21,5 @@
     <string name="description">Adicionar Post</string>
     <string name="menu_favoritos">menu favoritos</string>
     <string name="add_to_favorites">Adicionar aos favoritos</string>
+    <string name="registrar">Registrar</string>
 </resources>

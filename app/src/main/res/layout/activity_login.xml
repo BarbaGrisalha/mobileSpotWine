@@ -7,8 +7,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".LoginActivity"
-    android:background="@color/colorSecondary">
+    android:background="@color/colorSecondary"
+    android:padding="16dp">
 
+    <!-- Botão de Configurar Hostname (no canto superior direito) -->
+    <ImageButton
+        android:id="@+id/btnConfigureHostname"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|top"
+        android:layout_margin="16dp"
+        android:background="@color/colorPrimary"
+        android:contentDescription="Configurar Hostname"
+        android:onClick="onClickConfigureHostname"
+        android:src="@drawable/ic_server_manager" />
+
+    <!-- Logo -->
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
@@ -16,34 +30,29 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:src="@drawable/logo"
-        tools:layout_editor_absoluteX="53dp"
-        tools:layout_editor_absoluteY="88dp"
         tools:src="@drawable/logo" />
 
+    <!-- Campo de E-mail -->
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:hint="Introduza o email!"
         android:inputType="textEmailAddress"
         android:textColor="@android:color/darker_gray"
-        android:textSize="30sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="263dp" />
+        android:textSize="30sp" />
 
+    <!-- Campo de Senha -->
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:hint="Introduza a password!"
         android:inputType="textPassword"
         android:textColor="@android:color/darker_gray"
-        android:textSize="30sp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="336dp" />
+        android:textSize="30sp"/>
 
+    <!-- Botão de Login -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
@@ -51,15 +60,16 @@
         android:onClick="onClickLogin"
         android:backgroundTint="@color/colorPrimary"
         android:text="Login"
-        android:textSize="20sp"
-        app:cornerRadius="0sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="407dp"/>
+        android:textSize="20sp" />
 
-    <View
-        android:id="@+id/view"
+    <!-- Botão de Registrar-se -->
+    <Button
+        android:id="@+id/btnRegister"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5" />
-
+        android:layout_height="wrap_content"
+        android:text="Registrar-se"
+        android:textSize="18sp"
+        android:backgroundTint="@color/colorGold"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp" />
 </LinearLayout>
