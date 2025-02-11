@@ -63,25 +63,22 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
     }
 
     @Override
-    public void onValidateLogin(String token, String email, Context context) {
-        if(Objects.nonNull(token)) {
-            //guardar dados
-            SharedPreferences sharedPreferences = getSharedPreferences("AUTH_DATA",MODE_PRIVATE);
-
-            //criar o objeto para guardar
+    public void onValidateLogin(String token, int userId, String email, Context context) {
+        if (token != null && userId != -1) {
+            SharedPreferences sharedPreferences = getSharedPreferences("AUTH_DATA", MODE_PRIVATE);
             SharedPreferences.Editor saveData = sharedPreferences.edit();
 
-            //guardar como chave:valor
-            saveData.putString("loggedEmail", userEmail.getText().toString());
+            saveData.putString("loggedEmail", email);
             saveData.putString("TOKEN", token);
-            //confirmar e guardar dados
+            saveData.putInt("USER_ID", userId); // Armazena o ID do usuário
             saveData.apply();
 
             Intent toMenu = new Intent(this, MenuMainActivity.class);
-            toMenu.putExtra("userEmail", userEmail.getText().toString());
+            toMenu.putExtra("userEmail", email);
             startActivity(toMenu);
         } else {
             Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

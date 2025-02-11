@@ -6,12 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:background="@color/colorSecondary">
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="match_parent"
-        android:layout_height="371dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:src="@drawable/logo"
         tools:layout_editor_absoluteX="53dp"
@@ -47,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickLogin"
+        android:backgroundTint="@color/colorPrimary"
         android:text="Login"
         android:textSize="20sp"
         app:cornerRadius="0sp"

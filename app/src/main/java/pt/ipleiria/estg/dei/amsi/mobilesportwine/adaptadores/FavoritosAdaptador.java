@@ -72,7 +72,6 @@ public class FavoritosAdaptador extends RecyclerView.Adapter<FavoritosAdaptador.
 
             Glide.with(context).load(vinho.getImage()).into(imgCapa);
 
-            // Se clicar no favorito, remove dos favoritos
             btnRemoveFavorito.setOnClickListener(v -> {
                 SingletonManager.getInstance(context).removeFavorito(vinho.getId());
                 listaVinhos.remove(getAdapterPosition());
@@ -97,7 +96,6 @@ public class FavoritosAdaptador extends RecyclerView.Adapter<FavoritosAdaptador.
         private boolean isValidToCart(Vinho vinho) {
             String quantidadeStr = etQuantidade.getText().toString().trim();
 
-            // Verifica se a quantidade foi inserida
             if (quantidadeStr.isEmpty()) {
                 Toast.makeText(context, "Insira uma quantidade!", Toast.LENGTH_SHORT).show();
                 return false;
@@ -111,7 +109,7 @@ public class FavoritosAdaptador extends RecyclerView.Adapter<FavoritosAdaptador.
                 return false;
             }
 
-            // Verifica se a quantidade é válida
+
             if (quantidade <= 0) {
                 Toast.makeText(context, "Quantidade deve ser maior que zero!", Toast.LENGTH_SHORT).show();
                 return false;

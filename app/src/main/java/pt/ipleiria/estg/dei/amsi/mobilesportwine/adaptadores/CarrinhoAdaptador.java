@@ -89,7 +89,6 @@ public class CarrinhoAdaptador extends RecyclerView.Adapter<CarrinhoAdaptador.Vi
             }
 
             btnRemover.setOnClickListener(v -> {
-                System.out.println("--> 🗑️ Removendo item: " + item.getProductName());
                 removerItem(position);
             });
 
@@ -97,15 +96,13 @@ public class CarrinhoAdaptador extends RecyclerView.Adapter<CarrinhoAdaptador.Vi
     }
 
     private String getImagemDoVinho(int productId) {
-        System.out.println("--> Procurando imagem para o produto ID: " + productId);
-
         for (Vinho vinho : listaVinhos) {
             System.out.println("Vinho: " + vinho.getId() + " - " + vinho.getImage());
             if (vinho.getId() == productId) {
                 return vinho.getImage();
             }
         }
-        System.out.println("--> Nenhuma imagem encontrada para o produto ID: " + productId);
+
         return null;
     }
 
@@ -116,10 +113,6 @@ public class CarrinhoAdaptador extends RecyclerView.Adapter<CarrinhoAdaptador.Vi
         SingletonManager.getInstance(context).removerItemCarrinhoAPI(context, itemId, new CarrinhoListener() {
             @Override
             public void onRefreshListaCarrinho(ArrayList<ItemCarrinho> listaItens) {
-                System.out.println("--> 🔄 Atualizando RecyclerView após remoção...");
-                System.out.println("--> Lista de itens recebida: " + listaItens.size());
-
-                // Atualiza a lista local
                 carrinho.clear();
                 carrinho.addAll(listaItens);
 

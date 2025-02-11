@@ -27,22 +27,28 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.MenuMainActivity;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.R;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.adaptadores.ReviewAdaptador;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.CarrinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.CheckoutListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.InvoiceListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.LoginListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.PostListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.PostsListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.ReviewListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhosListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.CarrinhoJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ConnectivityJsonParser;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.InvoiceJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.LoginJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.PostJsonParser;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ReviewJsonParser;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.VinhoJsonParser;
 
 public class SingletonManager {
@@ -51,6 +57,7 @@ public class SingletonManager {
     private ArrayList<Vinho> vinhos;
     private ArrayList<ItemCarrinho> itensCarrinho;
     private ArrayList<Post> posts;
+    private ArrayList<Review> reviews;
     private Context context;
     private Set<Integer> favoritos; // Usando um Set para evitar duplicação de IDs
 
@@ -71,6 +78,8 @@ public class SingletonManager {
     private CheckoutListener checkoutListener;
     private PostsListener postsListener;
     private PostListener postListener;
+    private ReviewListener reviewListener;
+    private InvoiceListener invoiceListener;
 
     public static synchronized SingletonManager getInstance(Context context) {
         if (instance == null) {
@@ -115,6 +124,14 @@ public class SingletonManager {
 
     public void setPostListener(PostListener listener) {
         this.postListener = listener;
+    }
+
+    public void setReviewsListener(ReviewListener listener) {
+        this.reviewListener = listener;
+    }
+
+    public void setInvoiceListener(InvoiceListener listener) {
+        this.invoiceListener = listener;
     }
 
 
@@ -672,14 +689,21 @@ public class SingletonManager {
             return;
         }
 
-        String url = "http://51.20.254.239:8080/api/blog-post?access-token=gib1WP8VjzEZ1EfvLlEqWDbezvzqVfzY";
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+
+        String url = "http://51.20.254.239:8080/api/blog-post?access-token="+token;
 
         StringRequest request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-//                        Post novoPost = PostJsonParser.parserJsonPost(response);
-//                        adicionarPostBD(newPost); // Adiciona ao BD local
 
                         if (postListener != null) {
                             postListener.onRefreshDetalhesPost(MenuMainActivity.ADD);
@@ -753,6 +777,7 @@ public class SingletonManager {
 
         StringRequest request = new StringRequest(Request.Method.DELETE, url,
                 new Response.Listener<String>() {
+
                     @Override
                     public void onResponse(String response) {
 //                        removerPostBD(post.getId());
@@ -892,43 +917,249 @@ public class SingletonManager {
     }
 
 
-
-
-    // Retorna a lista de favoritos
         public Set<Integer> getFavoritos() {
             return favoritos;
         }
 
+    public void getReviewsAPI(int productId, Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("USER_ID", -1);
+
+        String url = "http://51.20.254.239:8080/api/review/" + productId;
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        // Faz o parsing do JSON para a lista de reviews
+                        reviews = ReviewJsonParser.parserJsonReviews(response);
+
+                        if (reviewListener != null) {
+                            reviewListener.onRefreshReviews(reviews, productId); // Passa o productId como segundo parâmetro
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao buscar reviews: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Adiciona a requisição à fila do Volley
+        volleyQueue.add(request);
+    }
+
+    public void adicionarReviewAPI(final Review review, int productId, final Context context) {
+        // Verifica a conexão com a internet
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // URL do endpoint para adicionar uma review
+        String url = "http://51.20.254.239:8080/api/review?access-token="+token;
+
+        // Cria a requisição POST
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        getReviewsAPI(productId, context);
+
+                        Toast.makeText(context, "Review adicionada com sucesso!", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Depuração: Imprime o erro
+                        System.err.println("Erro ao adicionar review: " + error.getMessage());
+
+                        Toast.makeText(context, "Erro ao adicionar review: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() {
+                // Parâmetros do corpo da requisição
+                Map<String, String> params = new HashMap<>();
+                params.put("product_id", String.valueOf(productId)); // ID do produto
+                params.put("rating", String.valueOf(review.getRating())); // Nota da review
+                params.put("comment", review.getComment()); // Comentário da review
+                return params;
+            }
+        };
+
+        // Adiciona a requisição à fila do Volley
+        volleyQueue.add(request);
+    }
+
+    public void editarReviewAPI(final Review review, final Context context) {
+        // Verifica a conexão com a internet
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // URL do endpoint para editar uma review (substitua {id} pelo ID da review)
+        String url = "http://51.20.254.239:8080/api/review/" + review.getId() + "?access-token="+token;
+
+        // Cria a requisição PUT
+        StringRequest request = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Depuração: Imprime a resposta da API
+                        System.out.println("--> Resposta da API (Editar Review): " + response);
+
+                        getReviewsAPI(review.getProductId(), context);
+
+                        Toast.makeText(context, "Review editada com sucesso!", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Depuração: Imprime o erro
+                        System.err.println("Erro ao editar review: " + error.getMessage());
+
+                        Toast.makeText(context, "Erro ao editar review: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() {
+                // Parâmetros do corpo da requisição
+                Map<String, String> params = new HashMap<>();
+                params.put("rating", String.valueOf(review.getRating())); // Nova nota da review
+                params.put("comment", review.getComment()); // Novo comentário da review
+                return params;
+            }
+        };
+
+        // Adiciona a requisição à fila do Volley
+        volleyQueue.add(request);
+    }
+
+    public void deletarReviewAPI(final int reviewId, final int productId, final Context context) {
+        // Verifica a conexão com a internet
+        if (!ConnectivityJsonParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.no_internet_access, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // URL do endpoint para deletar uma review (substitua {id} pelo ID da review)
+        String url = "http://51.20.254.239:8080/api/review/" + reviewId + "?access-token=" + token;
+
+        // Cria a requisição DELETE
+        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Depuração: Imprime a resposta da API
+                        System.out.println("--> Resposta da API (Deletar Review): " + response);
+
+                        getReviewsAPI(productId, context);
+
+                        Toast.makeText(context, "Review deletada com sucesso!", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Depuração: Imprime o erro
+                        System.err.println("Erro ao deletar review: " + error.getMessage());
+
+                        Toast.makeText(context, "Erro ao deletar review: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Adiciona a requisição à fila do Volley
+        volleyQueue.add(request);
+    }
+
+    public void getInvoicesAPI(Context context, InvoiceListener listener) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(context, "Token inválido. Faça login novamente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = "http://51.20.254.239:8080/api/invoice/my-invoices?access-token=" + token;
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        ArrayList<Invoice> invoices = InvoiceJsonParser.parserJsonInvoices(response);
+                        if (listener != null) {
+                            listener.onRefreshInvoices(invoices);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Erro ao buscar faturas: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Adiciona a requisição à fila do Volley
+        volleyQueue.add(request);
+    }
+
 
     public void loginAPI(String email, String password, final Context context) {
-        StringRequest request = new StringRequest(Request.Method.POST, mUrlAPILogin, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                String token = String.valueOf(LoginJsonParser.parseLoginData(response)); // Parse do token
-                System.out.println("---- token " + token);
+        StringRequest request = new StringRequest(Request.Method.POST, mUrlAPILogin,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String token = LoginJsonParser.parseLoginToken(response); // Pega o token
+                        int userId = LoginJsonParser.parseUserId(response); // Pega o ID do usuário
 
-                if (loginListener != null)
-                    loginListener.onValidateLogin(token, email, context); // Callback do listener
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("LoginAPI", "Erro no login: ", error);
+                        System.out.println("---- token " + token);
+                        System.out.println("---- userId " + userId);
 
-                String errorMessage;
-                if (error instanceof TimeoutError) {
-                    errorMessage = "Tempo de resposta expirou. Tente novamente.";
-                } else if (error instanceof NoConnectionError) {
-                    errorMessage = "Sem conexão com a internet. Verifique sua rede.";
-                } else if (error instanceof AuthFailureError) {
-                    errorMessage = "Falha na autenticação. Verifique suas credenciais.";
-                } else {
-                    errorMessage = "Erro inesperado: " + error.getMessage();
-                }
-
-                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-            }
-        }) {
+                        if (loginListener != null)
+                            loginListener.onValidateLogin(token, userId, email, context);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("LoginAPI", "Erro no login: ", error);
+                        Toast.makeText(context, "Erro ao fazer login", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -937,10 +1168,9 @@ public class SingletonManager {
                 return params;
             }
         };
-
-
         volleyQueue.add(request);
     }
+
 
 
     //endregion

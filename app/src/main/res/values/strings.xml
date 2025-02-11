@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileSpotWine</string>
+    <string name="app_name">SpotWine</string>
     <string name="email_inv_lido">Email inválido</string>
     <string name="password_inv_lido">Password inválido</string>
     <!-- TODO: Remove or change this placeholder text -->

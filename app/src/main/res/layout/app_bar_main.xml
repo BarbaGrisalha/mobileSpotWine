@@ -14,10 +14,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             android:theme="?attr/actionBarTheme"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:title="Mobile SpotWine" /> <!-- Título da Toolbar (opcional) -->
+            app:title="SpotWine" /> <!-- Título da Toolbar (opcional) -->
 
     </com.google.android.material.appbar.AppBarLayout>
 

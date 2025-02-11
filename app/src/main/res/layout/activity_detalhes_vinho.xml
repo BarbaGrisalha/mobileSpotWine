@@ -5,12 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".DetalhesVinhoActivity">
+    tools:context=".DetalhesVinhoActivity"
+    android:background="@color/colorSecondary">
 
+    <!-- ScrollView para permitir rolagem -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,75 +20,112 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Imagem do vinho -->
             <ImageView
-                android:id="@+id/imgCapaVinho"
+                android:id="@+id/imgCapaVinhoDetalhes"
                 android:layout_width="match_parent"
-                android:layout_height="402dp"
+                android:layout_height="250dp"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/wine_default" />
 
-            <EditText
-                android:id="@+id/etName"
+            <!-- Detalhes do vinho -->
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:paddingTop="8dp"/>
+
+            <TextView
+                android:id="@+id/tvDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nome"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:textColorHint="#BFBFBF" />
+                android:textSize="16sp"
+                android:textColor="@color/colorPrimary"
+                android:paddingTop="4dp"/>
 
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorGold"
+                android:paddingTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorPrimary"
+                android:paddingTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvStock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorPrimary"
+                android:paddingTop="4dp"/>
+
+            <!-- Título das avaliações -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Avaliações"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorGold"
+                android:paddingTop="16dp"/>
+
+            <!-- Container para a lista de reviews com rolagem -->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:fillViewport="false">
+
+                <!-- RecyclerView para as avaliações -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"/>
+            </androidx.core.widget.NestedScrollView>
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="1"
+                android:rating="0"
+                android:layout_marginTop="8dp"/>
+            <!-- Campo para adicionar avaliação -->
             <EditText
-                android:id="@+id/etDescription"
+                android:id="@+id/etReview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Descrição"
-                android:inputType="text"
+                android:hint="Escreva sua avaliação..."
                 android:minHeight="48dp"
-                android:textColorHint="#BFBFBF" />
+                android:background="@drawable/bg_edittext"
+                android:padding="10dp"
+                android:textColorHint="#BFBFBF"
+                android:textColor="@color/black"
+                android:layout_marginTop="16dp"/>
 
-            <EditText
-                android:id="@+id/etPrice"
+            <!-- Botão para enviar avaliação -->
+            <Button
+                android:id="@+id/btnEnviarReview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Preço"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp"
-                android:textColorHint="#BFBFBF" />
-
-            <EditText
-                android:id="@+id/etCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Categoria"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:textColorHint="#BFBFBF" />
-
-            <EditText
-                android:id="@+id/etStock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Estoque"
-                android:inputType="number"
-                android:minHeight="48dp"
-                android:textColorHint="#BFBFBF" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
-
+                android:layout_height="48dp"
+                android:text="Enviar Avaliação"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
         </LinearLayout>
     </ScrollView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabGuardar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/purple_500"
-        android:clickable="true"
-        android:contentDescription="@string/guardar"
-        android:src="@drawable/ic_action_save"
-        app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

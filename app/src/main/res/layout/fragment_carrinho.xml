@@ -22,7 +22,7 @@
         android:id="@+id/btnFinalizarCompra"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/purple_500"
+        android:backgroundTint="@color/colorPrimary"
         android:padding="12dp"
         android:text="Finalizar Compra - €0.00"
         android:textColor="@android:color/white"

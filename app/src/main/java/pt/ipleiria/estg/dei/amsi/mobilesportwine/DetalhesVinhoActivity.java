@@ -1,199 +1,141 @@
 package pt.ipleiria.estg.dei.amsi.mobilesportwine;
 
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.adaptadores.ReviewAdaptador;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.ReviewListener;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.listeners.VinhoListener;
+import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Review;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.SingletonManager;
 import pt.ipleiria.estg.dei.amsi.mobilesportwine.modelo.Vinho;
-import pt.ipleiria.estg.dei.amsi.mobilesportwine.utils.ConnectivityJsonParser;
 
-public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoListener {
+public class DetalhesVinhoActivity extends AppCompatActivity implements VinhoListener, ReviewListener {
 
     public static final String ID_VINHO = "ID_VINHO";
 
     private Vinho vinho;
+    private RecyclerView rvReviews;
 
-    private EditText etName, etDescription, etPrice, etCategory, etStock;
+    private TextView tvName, tvDescription, tvPrice, tvCategory, tvStock;
     private ImageView imgCapa;
-    private FloatingActionButton fabGuardar;
+
+    private EditText etReview;
+    private RatingBar ratingBar; // Adicionado o RatingBar
+    private Button btnEnviarReview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_vinho);
 
-        int id = getIntent().getIntExtra(ID_VINHO, 0);
+        rvReviews = findViewById(R.id.rvReviews);
+
+        int id = getIntent().getIntExtra("vinhoId", -1);
+        System.out.println("--> ID vinho dos detalhes: " + ID_VINHO);
         vinho = SingletonManager.getInstance(getApplicationContext()).getVinho(id);
+        System.out.println("--> vinho dos detalhes: " + vinho);
 
-        etName = findViewById(R.id.etName);
-        etDescription = findViewById(R.id.etDescription);
-        etPrice = findViewById(R.id.etPrice);
-        etCategory = findViewById(R.id.etCategory);
-        etStock = findViewById(R.id.etStock);
-        etPrice = findViewById(R.id.etPrice);
-        imgCapa = findViewById(R.id.imgCapaVinho);
+        tvName = findViewById(R.id.tvName);
+        tvDescription = findViewById(R.id.tvDescription);
+        tvPrice = findViewById(R.id.tvPrice);
+        tvCategory = findViewById(R.id.tvCategory);
+        tvStock = findViewById(R.id.tvStock);
+        imgCapa = findViewById(R.id.imgCapaVinhoDetalhes);
+        etReview = findViewById(R.id.etReview);
+        ratingBar = findViewById(R.id.ratingBar); // Referência ao RatingBar
+        btnEnviarReview = findViewById(R.id.btnEnviarReview);
 
-        fabGuardar = findViewById(R.id.fabGuardar);
-
-        if(vinho != null){
+        if (vinho != null) {
             carregarVinho();
-            fabGuardar.setImageResource(R.drawable.ic_action_save);
-        }else{
-            setTitle(getString(R.string.guardar));
-            fabGuardar.setImageResource(R.drawable.ic_action_adicionar);
-
         }
 
-        fabGuardar.setOnClickListener(new View.OnClickListener() {
+        SingletonManager.getInstance(getApplicationContext()).getReviewsAPI(id, getApplicationContext());
+        SingletonManager.getInstance(getApplicationContext()).setVinhoListener(this);
+        SingletonManager.getInstance(getApplicationContext()).setReviewsListener(this);
+
+        // Configurar o clique do botão para enviar a review
+        btnEnviarReview.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if(vinho != null){
-                    //GUARDAR
-
-                    if (!isVinhoValido()) {
-                        // Se os campos não são válidos, mostra uma mensagem
-                        Toast.makeText(DetalhesVinhoActivity.this, "Preencha todos os campos corretamente!", Toast.LENGTH_SHORT).show();
-                        return; // Sai do método sem salvar
-                    }
-
-                    vinho.setName(etName.getText().toString());
-                    vinho.setDescription(etDescription.getText().toString());
-                    vinho.setPrice(Double.parseDouble(etPrice.getText().toString()));
-                    vinho.setCategory(etCategory.getText().toString());
-                    vinho.setStock(Integer.parseInt(etStock.getText().toString()));
-
-                    SingletonManager.getInstance(getApplicationContext()).editarVinhoAPI(vinho, getApplicationContext());
-
-
-                }else{
-                    //ADICIONAR
-                    if (!isVinhoValido()) {
-                        // Se os campos não são válidos, mostra uma mensagem
-                        Toast.makeText(DetalhesVinhoActivity.this, "Preencha todos os campos corretamente!", Toast.LENGTH_SHORT).show();
-                        return; // Sai do método sem salvar
-                    }
-
-                    vinho = new Vinho(0,
-                            etName.getText().toString(),
-                            etDescription.getText().toString(),
-                            etCategory.getText().toString(),
-                            Double.parseDouble(etPrice.getText().toString()),
-                            Integer.parseInt(etStock.getText().toString()),
-                            ""
-                    );
-
-
-                    SingletonManager.getInstance(getApplicationContext()).adicionarVinhoAPI(vinho, getApplicationContext());
-                }
+            public void onClick(View v) {
+                enviarReview();
             }
         });
-
-        SingletonManager.getInstance(getApplicationContext()).setVinhoListener(this);
-
     }
 
-    private boolean isVinhoValido() {
-        // Verifica se os campos não estão vazios
-        if (etName.getText().toString().trim().isEmpty()) return false;
-        if (etDescription.getText().toString().trim().isEmpty()) return false;
-
-        // Verifica se o ano é válido
-        String precoTexto = etPrice.getText().toString().trim();
-        if (precoTexto.isEmpty()) return false;
-
-        try {
-            int preco = Integer.parseInt(precoTexto);
-            if (preco <= 0) return false; // preço não pode ser negativo ou zero
-        } catch (NumberFormatException e) {
-            return false; // O preço não é um número válido
-        }
-
-        // Todos os campos são válidos
-        return true;
-    }
-
-    private void carregarVinho(){
+    private void carregarVinho() {
         setTitle(vinho.getName());
-        etDescription.setText(vinho.getDescription());
-        etPrice.setText(""+vinho.getPrice());
+        tvName.setText(vinho.getName());
+        tvDescription.setText(vinho.getDescription());
+        tvPrice.setText(String.format("€ %.2f", vinho.getPrice()));
+        tvCategory.setText(vinho.getCategory());
+        tvStock.setText(vinho.getStock() + " unidades disponíveis");
 
         Glide.with(getApplicationContext())
                 .load(vinho.getImage())
                 .placeholder(R.drawable.wine_default)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(imgCapa);  // Define a imagem da capa do livro
+                .into(imgCapa);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if(vinho != null){
-            getMenuInflater().inflate(R.menu.menu_remover, menu);
-            return super.onCreateOptionsMenu(menu);
-        }
-        return false;
+    private void enviarReview() {
+        // Obter o texto da avaliação
+        String reviewText = etReview.getText().toString().trim();
 
-    }
+        // Obter o rating do RatingBar
+        int rating = (int) ratingBar.getRating();
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.itemRemover){
-            if(!ConnectivityJsonParser.isConnectionInternet(getApplicationContext())){
-                Toast.makeText(this, "Não tem ligação a rede", Toast.LENGTH_SHORT);
-            }else{
-                dialogRemover();
-            }
-
-            return true;
+        // Validar os campos
+        if (reviewText.isEmpty()) {
+            etReview.setError("Por favor, escreva uma avaliação.");
+            return;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        if (rating < 1 || rating > 5) {
+            Toast.makeText(this, "A classificação deve ser entre 1 e 5 estrelas.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    private void dialogRemover() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.txt_titulo_remover_livro)
-                .setMessage("Pretende remover o Livro?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SingletonManager.getInstance(getApplicationContext()).removerVinhoAPI(vinho, getApplicationContext());
+        // Obter o ID do vinho
+        int productId = getIntent().getIntExtra("vinhoId", -1);
 
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+        // Criar o objeto Review
+        Review review = new Review(0, 0, productId, rating, reviewText, null); // userId e createdAt podem ser definidos no servidor
 
-                    }
-                })
-                .setIcon(android.R.drawable.ic_delete)
-                .show();
+        // Enviar a review via SingletonManager
+        SingletonManager.getInstance(getApplicationContext()).adicionarReviewAPI(review, productId, getApplicationContext());
+
+        // Limpar os campos após o envio
+        etReview.setText("");
+        ratingBar.setRating(0);
     }
 
     @Override
     public void onRefreshDetalhes(int op) {
-        Intent intent = new Intent();
-        intent.putExtra(MenuMainActivity.OP_CODE, op);
-        setResult(RESULT_OK, intent);
-        finish();
+        // Atualizar detalhes do vinho, se necessário
     }
 
+    @Override
+    public void onRefreshReviews(ArrayList<Review> reviews, int id) {
+        // Atualizar a lista de reviews
+        ReviewAdaptador adapter = new ReviewAdaptador(reviews, id, DetalhesVinhoActivity.this);
+        rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        rvReviews.setAdapter(adapter);
+    }
 }
-
-

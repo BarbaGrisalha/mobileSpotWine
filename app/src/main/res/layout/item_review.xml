@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    >
+
+    <!-- Comentário do usuário -->
+    <TextView
+        android:id="@+id/tvComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
+
+    <!-- Nota e data -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:text="⭐ 5/5"/>
+
+        <TextView
+            android:id="@+id/tvCreatedAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/gray"/>
+    </LinearLayout>
+
+    <!-- Botões de ação -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingTop="4dp">
+
+        <ImageView
+            android:id="@+id/btnEdit"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:contentDescription="Editar"
+            android:padding="4dp"
+            android:src="@drawable/ic_edit"
+            android:background="@color/colorGold"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/btnDelete"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:contentDescription="Excluir"
+            android:background="@color/red"
+            android:padding="4dp"
+            android:src="@drawable/ic_action_remover"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</LinearLayout>

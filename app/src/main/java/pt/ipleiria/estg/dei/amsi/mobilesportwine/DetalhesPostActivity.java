@@ -61,6 +61,7 @@ public class DetalhesPostActivity extends AppCompatActivity implements PostListe
         }
 
         fabGuardarPost.setOnClickListener(view -> {
+            //TODO: CORRIGIR PARA PODER EDITAR SÓ O MEU POST
             if (post != null) {
                 // Editar post
                 if (!isPostValido()) {
@@ -131,6 +132,7 @@ public class DetalhesPostActivity extends AppCompatActivity implements PostListe
         return super.onOptionsItemSelected(item);
     }
 
+    //TODO: CORRIGIR PARA DELETAR SO O MEU POST
     private void dialogRemover() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.txt_titulo_remover_post)

@@ -5,7 +5,10 @@
     <color name="color_purple500">#641f5e</color>
     <color name="purple_500">#6623D7</color>
     <color name="colorGray">#7A7A7A</color>
-    <color name="colorPrimary">#1C1C1C</color>
+    <color name="colorPrimary">#4C1A1B</color>
+    <color name="colorSecondary">#F2E6D4</color>
+    <color name="colorGold">#D9A441</color>
     <color name="colorGrayLight">#C4C4C4</color>
     <color name="red">#F44336</color>
+    <color name="gray">#939393</color>
 </resources>

@@ -95,13 +95,11 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
             fragment = new BlogFragment();
             setTitle(item.getTitle());
 
-        } else if(item.getItemId() == R.id.navOrder){
+        } else if(item.getItemId() == R.id.navInvoice){
             //Abrir OrdersActivity
-            Intent intent = new Intent(this, OrdersActivity.class);
-            startActivity(intent);
+            fragment = new pt.ipleiria.estg.dei.amsi.mobilesportwine.fragments.FaturasFragment();
+            setTitle(item.getTitle());
         }else if (item.getItemId() == R.id.navEmail) {
-            // System.out.println("-->Nav Email");
-            // Toast.makeText(this, "-->Nav Email", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -122,19 +120,6 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
         onNavigationItemSelected(item);
     }
 
-    public void enviarEmail() {
-        String subject = "AMSI 2020/21";
-        String message = "Olá " + email + " isto é uma mensagem de teste";
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
-        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        intent.putExtra(Intent.EXTRA_TEXT, message);
-        if (intent.resolveActivity(getPackageManager()) != null)
-            startActivity(intent);
-        else
-            Toast.makeText(this, "Não teme email config.", Toast.LENGTH_SHORT);
-    }
 
 
     @Override

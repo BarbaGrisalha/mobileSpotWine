@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Campo para editar o comentário -->
+    <EditText
+        android:id="@+id/etEditarComentario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Editar comentário"
+        android:inputType="textMultiLine"
+        android:minHeight="100dp" />
+
+    <!-- RatingBar para editar a classificação -->
+    <RatingBar
+        android:id="@+id/ratingBarEditar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1"
+        android:rating="0"
+        android:layout_marginTop="16dp" />
+
+    <!-- Botão para salvar as alterações -->
+    <Button
+        android:id="@+id/btnSalvarEdicao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Salvar"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
