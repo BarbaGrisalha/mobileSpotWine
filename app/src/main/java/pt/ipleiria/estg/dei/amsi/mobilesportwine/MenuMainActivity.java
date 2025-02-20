@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,7 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private TextView loggedInAccount;
-    private String email = "";
+    private String username = "";
 
     private FragmentManager fragmentManager;
 
@@ -66,15 +67,21 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
 
     private void carregarCabecalho() {
-        email = getIntent().getStringExtra("userEmail");
+        username = getIntent().getStringExtra("userEmail");
 
         SharedPreferences sharedPreferenceUser = getSharedPreferences("AUTH_DATA", Context.MODE_PRIVATE);
 
-        if (email != null) {
+        if (username != null) {
             SharedPreferences.Editor editorUser = sharedPreferenceUser.edit();
-            editorUser.putString("loggedEmail", email);
+            editorUser.putString("loggedEmail", username);
             editorUser.apply();
+        }else{
+            username = sharedPreferenceUser.getString("loggedEmail", "sem username");
         }
+
+        View hView = navigationView.getHeaderView(0);
+        TextView nav_tvUsername = hView.findViewById(R.id.tvUsername);
+        nav_tvUsername.setText(username);
     }
 
     @Override

@@ -50,9 +50,16 @@
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="22sp"
                 android:textColor="@color/colorGold"
-                android:paddingTop="4dp"/>
+                android:textStyle="bold"
+                android:shadowColor="#80000000"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:layout_marginTop="8dp"
+                 />
+
 
             <TextView
                 android:id="@+id/tvCategory"
@@ -102,7 +109,11 @@
                 android:numStars="5"
                 android:stepSize="1"
                 android:rating="0"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:progressTint="@color/amarelo"
+                android:progressBackgroundTint="#B0B0B0"
+                android:secondaryProgressTint="@color/amarelo"/>
+
             <!-- Campo para adicionar avaliação -->
             <EditText
                 android:id="@+id/etReview"

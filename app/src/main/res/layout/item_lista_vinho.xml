@@ -75,10 +75,16 @@
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvDescription"
-            android:textSize="16sp"
-            android:textColor="@color/colorPrimary"
+            android:textSize="22sp"
+            android:textColor="@color/colorGold"
+            android:textStyle="bold"
+            android:shadowColor="#80000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:layout_marginTop="8dp"
             android:text="€15.99" />
+
 
         <!-- Estoque -->
         <TextView
@@ -119,11 +125,10 @@
                 android:id="@+id/btnAddToCart"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@color/purple_500"
+                android:background="@color/colorPrimary"
                 android:contentDescription="@string/add_to_cart"
                 android:padding="8dp"
-                android:src="@drawable/ic_cart_add"
-                />
+                android:src="@drawable/ic_cart_add" />
         </LinearLayout>
 
     </LinearLayout>

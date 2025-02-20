@@ -1093,10 +1093,12 @@ public class SingletonManager {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        System.out.println("--> response usuario login: "+response);
                         String token = LoginJsonParser.parseLoginToken(response); // Pega o token
                         int userId = LoginJsonParser.parseUserId(response); // Pega o ID do usuário
 
                         if (loginListener != null)
+
                             loginListener.onValidateLogin(token, userId, email, context);
                     }
                 },
